@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { toSnakeCase, toCamelCase } from "../utils/caseConverter";
 
 // Cấu hình axios
@@ -31,12 +31,12 @@ api.interceptors.request.use(
 
 // Interceptors xử lý response
 api.interceptors.response.use(
-  (response) => {
+  (response): AxiosResponse => {
     if (response.data) {
       // Chuyển data từ snake_case sang camelCase
       response.data = toCamelCase(response.data);
     }
-    return response.data; // Trả về data trực tiếp
+    return response;
   },
   (error) => {
     // Xử lý lỗi
