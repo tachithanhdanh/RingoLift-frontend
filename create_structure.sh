@@ -33,7 +33,7 @@ touch src/pages/Stories/{StoryList.tsx,StoryDetail.tsx}
 touch src/pages/Profile/{Profile.tsx,EditProfile.tsx}
 touch src/pages/Friends/{FriendList.tsx,PublicProfile.tsx}
 touch src/pages/Chat/{ChatList.tsx,ChatDetail.tsx}
-touch src/pages/Settings/{Settings.tsx}
+touch src/pages/Settings/Settings.tsx
 
 mkdir -p src/services
 touch src/services/{api.ts,authService.ts,lessonService.ts,chatService.ts}
