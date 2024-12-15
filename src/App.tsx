@@ -1,36 +1,44 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+// App.tsx
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminRoutes from "./routes/AdminRoutes";
+import PrivateRoutes from "./routes/PrivateRoutes";
+import PublicRoutes from "./routes/PublicRoutes";
+import { AuthProvider } from "./contexts/AuthContext";
+import AdminRouteGuard from "./guards/AdminRouteGuard";
+import PrivateRouteGuard from "./guards/PrivateRouteGuard";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-        <p>base URL: {import.meta.env.VITE_API_BASE_URL}</p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public routes - không cần đăng nhập */}
+          <Route path="/*" element={<PublicRoutes />} />
+
+          {/* Private routes - yêu cầu người dùng đăng nhập */}
+          <Route
+            path="/*"
+            element={
+              <PrivateRouteGuard>
+                <PrivateRoutes />
+              </PrivateRouteGuard>
+            }
+          />
+
+          {/* Admin routes - yêu cầu người dùng là admin */}
+          <Route
+            path="/*"
+            element={
+              <AdminRouteGuard>
+                <AdminRoutes />
+              </AdminRouteGuard>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
