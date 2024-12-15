@@ -9,11 +9,11 @@ import Stats from "../pages/Admin/Stats";
 const AdminRoutes = () => {
   return (
     <Routes>
-      <Route path="admin/dashboard" element={<Dashboard />} />
-      <Route path="admin/manage-lessons" element={<ManageLessons />} />
-      <Route path="admin/manage-users" element={<ManageUsers />} />
-      <Route path="admin/manage-stories" element={<ManageStories />} />
-      <Route path="admin/stats" element={<Stats />} />
+      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="manage-lessons" element={<ManageLessons />} />
+      <Route path="manage-users" element={<ManageUsers />} />
+      <Route path="manage-stories" element={<ManageStories />} />
+      <Route path="stats" element={<Stats />} />
     </Routes>
   );
 };

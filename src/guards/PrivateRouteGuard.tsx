@@ -11,7 +11,7 @@ const PrivateRouteGuard: React.FC<PrivateGuardProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;

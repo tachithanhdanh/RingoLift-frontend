@@ -11,7 +11,7 @@ const AdminRouteGuard: React.FC<AdminGuardProps> = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated || user?.role !== "ADMIN") {
-    return <Navigate to="/login" />;
+    return <Navigate to="/private/home" />;
   }
 
   return <>{children}</>;

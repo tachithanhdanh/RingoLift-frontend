@@ -17,10 +17,13 @@ import Flashcards from "../pages/Vocabulary/Flashcards";
 import Topics from "../pages/Vocabulary/Topics";
 import StoryList from "../pages/Stories/StoryList";
 import StoryDetail from "../pages/Stories/StoryDetail";
+import Vocabulary from "../pages/Vocabulary/Topics";
+import Home from "../pages/Home";
 
 const PrivateRoutes = () => {
   return (
     <Routes>
+      <Route path="/home" element={<Home />} />
       <Route path="profile" element={<Profile />} />
       <Route path="edit-profile" element={<EditProfile />} />
       <Route path="chat-list" element={<ChatList />} />
@@ -44,6 +47,7 @@ const PrivateRoutes = () => {
       <Route path="vocabulary/topics" element={<Topics />} />
       <Route path="stories" element={<StoryList />} />
       <Route path="story/:storyId" element={<StoryDetail />} />
+      <Route path="vocabulary" element={<Vocabulary />} />
     </Routes>
   );
 };
