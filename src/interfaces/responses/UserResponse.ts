@@ -14,4 +14,5 @@ export interface UserResponse extends BaseResponse {
   isPublic?: boolean;
   googleId?: string;
   accessToken?: string;
+  role: string;
 }
