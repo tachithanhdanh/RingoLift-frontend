@@ -1,0 +1,16 @@
+.text-orange {
+  color: #ff782d;
+}
+
+/* Custom button style */
+.btn-orange {
+  background-color: #ff782d; /* Custom color */
+  border-color: #ff782d;
+  color: #fff; /* Text color */
+  font-weight: bold;
+
+  &:hover {
+    background-color: scale-color(#ff782d, $lightness: -10%);
+    border-color: scale-color(#ff782d, $lightness: -10%);
+  }
+}
