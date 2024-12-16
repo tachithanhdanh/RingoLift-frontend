@@ -1,5 +1,5 @@
 export interface GoalRequest {
-    time_spent: number;
+    timeSpent: number;
     lessonCount: number;
     wordCount: number;
 }
