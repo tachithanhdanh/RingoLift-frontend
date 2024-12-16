@@ -1,0 +1,17 @@
+.custom-nav-link {
+    background-color: #65646A; /* Màu nền */
+    
+    border-radius: 5px; /* Bo góc */
+    padding: 15px 30px; /* Kích thước */
+    color: #F5F5F5; /* Màu chữ */
+    font-size: 20px;
+    margin: 0 20px; /* Khoảng cách giữa các mục */
+    text-align: center; /* Căn giữa nội dung */
+    text-decoration: none; /* Loại bỏ gạch chân */
+  }
+  
+  .custom-nav-link:hover {
+    background-color: #e2e6ea; /* Màu nền khi hover */
+    color: #000; /* Màu chữ khi hover */
+  }
+  
