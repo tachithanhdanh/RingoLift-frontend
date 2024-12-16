@@ -14,3 +14,9 @@
     border-color: scale-color(#ff782d, $lightness: -10%);
   }
 }
+
+$custom-navbar-color: #ffecec;
+
+.navbar-custom {
+  background-color: $custom-navbar-color;
+}
