@@ -2,7 +2,6 @@ import api from "./api";
 import { UserRequest } from "../interfaces/requests/UserRequest";
 import { UserResponse } from "../interfaces/responses/UserResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
-import { handleApiError } from "../utils/errorHandler";
 
 // Tạo mới người dùng
 export const createUser = async (
@@ -15,7 +14,7 @@ export const createUser = async (
     );
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -25,7 +24,7 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
     const response = await api.get<ResponseObject<UserResponse[]>>("/users");
     return response.data.data; // Trả về data kiểu UserResponse[]
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -35,10 +34,9 @@ export const getUserById = async (id: number): Promise<UserResponse> => {
     const response = await api.get<ResponseObject<UserResponse>>(
       `/users/${id}`
     );
-    console.log(response);
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -54,7 +52,7 @@ export const updateUser = async (
     );
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -63,6 +61,6 @@ export const deleteUser = async (id: number): Promise<void> => {
   try {
     await api.delete<ResponseObject<void>>(`/users/${id}`);
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
