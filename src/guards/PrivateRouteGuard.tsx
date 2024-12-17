@@ -2,6 +2,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import NavBar from "../components/common/NavBar";
 
 interface PrivateGuardProps {
   children: React.ReactNode;
@@ -14,7 +15,12 @@ const PrivateRouteGuard: React.FC<PrivateGuardProps> = ({ children }) => {
     return <Navigate to="/" />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <NavBar />
+      {children}
+    </>
+  );
 };
 
 export default PrivateRouteGuard;

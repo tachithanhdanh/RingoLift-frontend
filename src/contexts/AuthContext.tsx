@@ -1,6 +1,8 @@
 // contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "../interfaces/models/User";
+import { LogoutRequest } from "../interfaces/requests/LogoutRequest";
+import { logoutUser } from "../services/authService";
 
 interface AuthProviderProps {
   children: React.ReactNode; // Xác định kiểu của children là React.ReactNode
@@ -44,11 +46,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData)); // Lưu thông tin vào localStorage
+    localStorage.setItem("token", userData.accessToken || ""); // Lưu token vào localStorage
   };
 
-  const logout = () => {
-    setUser(null);
+  const logout = async () => {
+    try {
+      if (user) {
+        const logoutRequest: LogoutRequest = {
+          username: user.username,
+          token: user.accessToken || "",
+        };
+        // Gọi API để logout
+        await logoutUser(logoutRequest);
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    setUser(null); // Cập nhật trạng thái user trong AuthContext
     localStorage.removeItem("user"); // Xóa thông tin người dùng khỏi localStorage
+    localStorage.removeItem("token"); // Xóa token khỏi localStorage
   };
 
   const isAuthenticated = user !== null;

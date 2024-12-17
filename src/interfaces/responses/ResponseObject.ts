@@ -1,14 +1,14 @@
 import { HttpStatus } from "../../types/HttpStatus";
 import { BaseResponse } from "./BaseResponse";
-import { UserGenderResponse } from "./UserGenderResponse";
+import { SimpleResponse } from "./SimpleResponse";
 
 export interface ResponseObject<
   T extends
     | BaseResponse
     | BaseResponse[]
     | void
-    | UserGenderResponse
-    | UserGenderResponse[]
+    | SimpleResponse
+    | SimpleResponse[]
 > {
   message: string;
   status: HttpStatus;

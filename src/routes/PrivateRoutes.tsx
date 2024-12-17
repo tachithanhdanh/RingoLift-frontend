@@ -19,6 +19,9 @@ import StoryList from "../pages/Stories/StoryList";
 import StoryDetail from "../pages/Stories/StoryDetail";
 import Vocabulary from "../pages/Vocabulary/Topics";
 import Home from "../pages/Home";
+import Learn from "../pages/Learn/Learn";
+import Mistakes from "../pages/Mistakes/Mistakes";
+import MistakeDetail from "../pages/Mistakes/MistakeDetail";
 
 const PrivateRoutes = () => {
   return (
@@ -30,6 +33,7 @@ const PrivateRoutes = () => {
       <Route path="chat/:chatId" element={<ChatDetail />} />
       <Route path="friends" element={<FriendList />} />
       <Route path="friends/:userId" element={<PublicProfile />} />
+      <Route path="learn/" element={<Learn />} />
       <Route path="learn/chapter/:chapterId" element={<Chapter />} />
       <Route path="learn/lesson/:lessonId" element={<Lesson />} />
       <Route
@@ -48,6 +52,8 @@ const PrivateRoutes = () => {
       <Route path="stories" element={<StoryList />} />
       <Route path="story/:storyId" element={<StoryDetail />} />
       <Route path="vocabulary" element={<Vocabulary />} />
+      <Route path="mistakes" element={<Mistakes />} />
+      <Route path="mistakes/:mistakeId" element={<MistakeDetail />} />
     </Routes>
   );
 };
