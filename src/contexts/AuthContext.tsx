@@ -65,6 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null); // Cập nhật trạng thái user trong AuthContext
     localStorage.removeItem("user"); // Xóa thông tin người dùng khỏi localStorage
     localStorage.removeItem("token"); // Xóa token khỏi localStorage
+    // window.location.href = "/login"; // Redirect về trang login
   };
 
   const isAuthenticated = user !== null;
