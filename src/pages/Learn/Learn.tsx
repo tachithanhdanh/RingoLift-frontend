@@ -35,6 +35,7 @@ export default function Learn() {
             className="d-flex align-items-stretch"
           >
             <ChapterCard
+              id={chapter.id} // Pass chapter ID
               name={chapter.name}
               coverImage={chapter.coverImage || chapterCoverImage}
               description={chapter.description || ""}

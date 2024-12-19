@@ -18,6 +18,8 @@ const PrivateRouteGuard: React.FC<PrivateGuardProps> = ({ children }) => {
   return (
     <>
       <NavBar />
+      {/* Khoảng cách giữa NavBar và nội dung */}
+      <div style={{ marginTop: "80px" }}></div>
       {children}
     </>
   );
