@@ -1,6 +1,6 @@
 // LessonDetailPage.tsx
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Container, Button, Modal } from "react-bootstrap";
 import { getLessonById } from "../../services/lessonService";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -29,6 +29,7 @@ export default function LessonDetailPage() {
 
   const handleBack = () => {
     if (lesson) {
+      console.log(lesson.chapterId);
       navigate(`/private/learn/chapter/${lesson.chapterId}`);
     }
   };
@@ -58,9 +59,9 @@ export default function LessonDetailPage() {
             <h5>Chapter Information</h5>
             <p>
               <strong>Chapter ID:</strong>{" "}
-              <a href={`/private/learn/chapter/${lesson.chapterId}`}>
+              <Link to={`/private/learn/chapter/${lesson.chapterId}`}>
                 {lesson.chapterId}
-              </a>
+              </Link>
             </p>
             <p>
               <strong>Chapter Name:</strong> {lesson.chapterName}

@@ -1,9 +1,9 @@
 import React from "react";
-import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { AxiosResponse } from "axios";
 import { toCamelCase } from "../utils/caseConverter";
+import { useAuth } from "../hooks/useAuth";
 
 const AxiosInterceptorProvider = ({
   children,
@@ -33,9 +33,9 @@ const AxiosInterceptorProvider = ({
         console.log(currentPath);
 
         if (status === 401) {
-          logout(); // Gọi hàm logout từ AuthContext
           if (isPrivateRoute || isAdminRoute) {
-            // navigate("/login"); // Điều hướng về login nếu đang ở private hoặc admin
+            logout(); // Gọi hàm logout từ AuthContext
+            navigate("/login"); // Điều hướng về login nếu đang ở private hoặc admin
           }
         } else if (status === 403) {
           if (isAdminRoute) {
