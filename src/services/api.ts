@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from "axios";
-import { toSnakeCase, toCamelCase } from "../utils/caseConverter";
+import axios from "axios";
+import { toSnakeCase } from "../utils/caseConverter";
 
 // Cấu hình axios
 const api = axios.create({
@@ -30,23 +30,18 @@ api.interceptors.request.use(
 );
 
 // Interceptors xử lý response
-api.interceptors.response.use(
-  (response): AxiosResponse => {
-    if (response.data) {
-      // Chuyển data từ snake_case sang camelCase
-      response.data = toCamelCase(response.data);
-    }
-    return response;
-  },
-  (error) => {
-    // Xử lý lỗi
-    const status = error.response?.status;
-    if (status === 401) {
-      // Xử lý lỗi xác thực, ví dụ logout
-      console.error("Unauthorized! Redirecting to login.");
-    }
-    return Promise.reject(error.response || error.message);
-  }
-);
+// This interceptor has been moved to AxiosInterceptorProvider.tsx
+// api.interceptors.response.use(
+//   (response): AxiosResponse => {
+//     if (response.data) {
+//       // Chuyển data từ snake_case sang camelCase
+//       response.data = toCamelCase(response.data);
+//     }
+//     return response;
+//   },
+//   (error) => {
+//     return Promise.reject(error.response || error.message);
+//   }
+// );
 
 export default api;

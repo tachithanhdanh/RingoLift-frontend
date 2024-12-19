@@ -1,0 +1,31 @@
+.text-orange {
+  color: #ff782d;
+}
+
+/* Custom button style */
+.btn-orange {
+  background-color: #ff782d; /* Custom color */
+  border-color: #ff782d;
+  color: #fff; /* Text color */
+  font-weight: bold;
+
+  &:hover {
+    background-color: scale-color(#ff782d, $lightness: -10%);
+    border-color: scale-color(#ff782d, $lightness: -10%);
+  }
+}
+
+$custom-navbar-color: #ffecec;
+
+.navbar-custom {
+  background-color: $custom-navbar-color;
+}
+
+.chapter-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05); // Slightly enlarge the card
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); // Add shadow for depth
+  }
+}

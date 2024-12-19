@@ -3,6 +3,7 @@ import { UserRequest } from "../interfaces/requests/UserRequest";
 import { UserResponse } from "../interfaces/responses/UserResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
 import { handleApiError } from "../utils/errorHandler";
+import { UserGenderResponse } from "../interfaces/responses/UserGenderResponse";
 
 // Tạo mới người dùng
 export const createUser = async (
@@ -62,6 +63,32 @@ export const updateUser = async (
 export const deleteUser = async (id: number): Promise<void> => {
   try {
     await api.delete<ResponseObject<void>>(`/users/${id}`);
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// Get all genders
+export const getAllGenders = async (): Promise<UserGenderResponse[]> => {
+  try {
+    const response = await api.get<ResponseObject<UserGenderResponse[]>>(
+      `/users/genders`
+    );
+    return response.data.data; // Trả về data kiểu UserGenderResponse[]
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// Get user gender by id
+export const getUserGenderById = async (
+  id: number
+): Promise<UserGenderResponse> => {
+  try {
+    const response = await api.get<ResponseObject<UserGenderResponse>>(
+      `users/genders/${id}`
+    );
+    return response.data.data; // Trả về data kiểu UserGenderResponse
   } catch (error) {
     throw new Error(handleApiError(error));
   }
