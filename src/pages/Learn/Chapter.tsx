@@ -5,7 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Col, Container, Row } from "react-bootstrap";
 import { getChapterById } from "../../services/chapterService";
 import { getLessonsByChapterId } from "../../services/lessonService";
-import ChapterCard from "../../components/learn/ChapterCard";
 import LessonCard from "../../components/learn/LessonCard";
 import { ChapterResponse } from "../../interfaces/responses/ChapterResponse";
 import { LessonResponse } from "../../interfaces/responses/LessonResponse";

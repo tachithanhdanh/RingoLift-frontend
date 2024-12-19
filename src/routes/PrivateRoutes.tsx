@@ -7,7 +7,7 @@ import ChatDetail from "../pages/Chat/ChatDetail";
 import FriendList from "../pages/Friends/FriendList";
 import PublicProfile from "../pages/Friends/PublicProfile";
 import Chapter from "../pages/Learn/Chapter";
-import Lesson from "../pages/Learn/Lesson";
+import LessonDetailPage from "../pages/Learn/LessonDetailPage";
 import ListeningExercise from "../pages/Learn/ListeningExercise";
 import ListeningQuiz from "../pages/Learn/ListeningQuiz";
 import QuizFill from "../pages/Learn/QuizFill";
@@ -35,11 +35,12 @@ const PrivateRoutes = () => {
       <Route path="friends/:userId" element={<PublicProfile />} />
       <Route path="learn/" element={<Learn />} />
       <Route path="learn/chapter/:chapterId" element={<Chapter />} />
-      <Route path="learn/lesson/:lessonId" element={<Lesson />} />
+      <Route path="learn/lesson/:lessonId" element={<LessonDetailPage />} />
       <Route
         path="learn/listening-exercise/:exerciseId"
         element={<ListeningExercise />}
       />
+      <Route path="learn/listening-quiz/:quizId" element={<ListeningQuiz />} />
       <Route path="learn/listening-quiz/:quizId" element={<ListeningQuiz />} />
       <Route path="learn/quiz-fill/:quizId" element={<QuizFill />} />
       <Route
