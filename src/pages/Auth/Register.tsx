@@ -55,7 +55,7 @@ export default function Register() {
   }, []);
 
   // Xử lý khi input thay đổi
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
