@@ -1,7 +1,6 @@
 import api from "./api";
 import { UserResponse } from "../interfaces/responses/UserResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
-import { handleApiError } from "../utils/errorHandler";
 import { UserRegisterRequest } from "../interfaces/requests/UserRegisterRequest";
 import { LoginRequest } from "../interfaces/requests/LoginRequest";
 
@@ -16,7 +15,7 @@ export const registerUser = async (
     );
     return response.data.data; // Return data of type UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -31,6 +30,6 @@ export const loginUser = async (
     );
     return response.data.data; // Return data of type UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };

@@ -1,11 +1,13 @@
 // App.tsx
+
+import './index.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminRoutes from "./routes/AdminRoutes";
 import PrivateRoutes from "./routes/PrivateRoutes";
 import PublicRoutes from "./routes/PublicRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
 import AdminRouteGuard from "./guards/AdminRouteGuard";
-import PrivateRouteGuard from "./guards/PrivateRouteGuard";
+// import PrivateRouteGuard from "./guards/PrivateRouteGuard";
 import PublicRouteGuard from "./guards/PublicRouteGuard";
 
 const App = () => {
@@ -17,9 +19,9 @@ const App = () => {
           <Route
             path="/private/*"
             element={
-              <PrivateRouteGuard>
+              // <PrivateRouteGuard>
                 <PrivateRoutes />
-              </PrivateRouteGuard>
+              // </PrivateRouteGuard>
             }
           />
 
