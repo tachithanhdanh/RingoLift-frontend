@@ -1,13 +1,21 @@
-// src/services/WordService.ts
+// src/services/wordService.ts
 
-import { WordRequest } from "../interfaces/requests/WordRequest";
+import api from "./api";
 import { WordResponse } from "../interfaces/responses/WordResponse";
+import { ResponseObject } from "../interfaces/responses/ResponseObject";
 
-export interface WordService {
-    createWord(wordRequest: WordRequest): Promise<WordResponse>;
-    getWordById(wordId: number): Promise<WordResponse>;
-    getAllWords(): Promise<WordResponse[]>;
-    updateWord(wordId: number, wordRequest: WordRequest): Promise<WordResponse>;
-    deleteWord(wordId: number): Promise<void>;
-    getWordsByTopic(topicId: number): Promise<WordResponse[]>;
-}
+
+export const getWordsByTopic = async (topicId: number): Promise<WordResponse[]> => {
+  try {
+    const response = await api.get<ResponseObject<WordResponse[]>>(`/words/topic/${topicId}`);
+    console.log("API Response:", response.data);
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else {
+      throw new Error("Invalid data format received from API.");
+    }
+  } catch (error: any) {
+    console.error("Error fetching words by topic:", error);
+    throw new Error(error.response?.data?.message || "Error fetching words by topic.");
+  }
+};

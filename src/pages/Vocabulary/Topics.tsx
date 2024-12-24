@@ -37,8 +37,9 @@ const Topics: React.FC = () => {
   }, []);
 
   const handleTopicClick = (topicId: number) => {
-    navigate(`/vocabulary/topics/${topicId}/flashcard`);
+    navigate(`${topicId}`);
   };
+  
 
   return (
     <Container fluid className="min-vh-100 d-flex align-items-center bg-light">

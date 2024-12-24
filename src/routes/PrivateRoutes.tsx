@@ -13,11 +13,10 @@ import ListeningQuiz from "../pages/Learn/ListeningQuiz";
 import QuizFill from "../pages/Learn/QuizFill";
 import QuizMultipleChoice from "../pages/Learn/QuizMultipleChoice";
 import QuizResult from "../pages/Learn/QuizResult";
-import Flashcards from "../pages/Vocabulary/Flashcards";
-import Topics from "../pages/Vocabulary/Topics";
+import TopicDetail from "../pages/Vocabulary/Flashcards";
 import StoryList from "../pages/Stories/StoryList";
 import StoryDetail from "../pages/Stories/StoryDetail";
-import Vocabulary from "../pages/Vocabulary/Topics";
+import Topics from "../pages/Vocabulary/Topics";
 import Home from "../pages/Home";
 import Learn from "../pages/Learn/Learn";
 import Mistakes from "../pages/Mistakes/Mistakes";
@@ -47,11 +46,10 @@ const PrivateRoutes = () => {
         element={<QuizMultipleChoice />}
       />
       <Route path="learn/quiz-result/:quizId" element={<QuizResult />} />
-      <Route path="vocabulary/flashcards" element={<Flashcards />} />
-      <Route path="vocabulary/topics" element={<Topics />} />
+      <Route path="vocabulary/:topicId" element={<TopicDetail />} />
       <Route path="stories" element={<StoryList />} />
       <Route path="story/:storyId" element={<StoryDetail />} />
-      <Route path="vocabulary" element={<Vocabulary />} />
+      <Route path="vocabulary" element={<Topics />} />
       <Route path="mistakes" element={<Mistakes />} />
       <Route path="mistakes/:mistakeId" element={<MistakeDetail />} />
     </Routes>
