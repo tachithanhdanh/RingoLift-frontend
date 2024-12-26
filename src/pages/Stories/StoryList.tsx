@@ -5,7 +5,7 @@ import { getAllBooks } from '../../services/bookService';
 import { getAllGenres } from '../../services/bookGenreService';
 import { BookResponse } from '../../interfaces/responses/BookResponse';
 import { BookGenreResponse } from '../../interfaces/responses/BookGenreResponse';
-import NavBar from '../../components/common/NavBar'; // Import NavBar
+import NavBar from '../../components/common/NavBar';
 
 const StoryList: React.FC = () => {
   const [stories, setStories] = useState<BookResponse[]>([]);
@@ -21,10 +21,9 @@ const StoryList: React.FC = () => {
     const fetchStoriesAndGenres = async () => {
       try {
         const storyResponse = await getAllBooks();
-        setStories(storyResponse.data);
-
+        setStories(storyResponse || []);
         const genreResponse = await getAllGenres();
-        setGenres(genreResponse.data);
+        setGenres(genreResponse || []);
       } catch (err) {
         setError('Failed to fetch stories or genres');
         console.error(err);
@@ -44,9 +43,9 @@ const StoryList: React.FC = () => {
     return <div>{error}</div>;
   }
 
-  const getGenreName = (genreId: string) => {
-    const genre = genres.find((g) => g.id === parseInt(genreId));
-    return genre ? genre.genre_type : 'Unknown Genre';
+  const getGenreName = (genreId: number) => {
+    const genre = genres.find((g) => g.id === genreId);
+    return genre?.genreType || 'Unknown Genre';
   };
 
   const filteredStories = stories.filter((story) =>
@@ -63,12 +62,12 @@ const StoryList: React.FC = () => {
   };
 
   const handleClick = (id: string) => {
-    navigate(`/story/${id}`); // Ensure this path matches your route
+    navigate(`/story/${id}`);
   };
 
   return (
     <div className="container">
-      <NavBar /> {/* Include the NavBar here */}
+      <NavBar />
       <style>{`
         .container {
           padding: 20px;
@@ -93,7 +92,7 @@ const StoryList: React.FC = () => {
         value={searchTerm}
         onChange={(e) => {
           setSearchTerm(e.target.value);
-          setCurrentPage(1); // Reset to first page on search
+          setCurrentPage(1);
         }}
         className="form-control mb-3"
       />
@@ -103,12 +102,12 @@ const StoryList: React.FC = () => {
             <StoryCard
               title={story.title}
               author={story.author}
-              genre={getGenreName(story.genre_id.toString())}
-              publishedDate={story.published_date}
+              genre={getGenreName(story.genreId)}
+              publishedDate={story.publishedDate}
               description={story.description}
-              createdAt={story.created_at}
-              updatedAt={story.updated_at}
-              onClick={() => handleClick(story.id.toString())} // Pass ID for navigation
+              createdAt={story.createdAt}
+              updatedAt={story.updatedAt}
+              onClick={() => handleClick(story.id.toString())}
             />
           </div>
         ))}
