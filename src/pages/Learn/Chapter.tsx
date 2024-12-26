@@ -2,24 +2,26 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Spinner } from "react-bootstrap";
 import { getChapterById } from "../../services/chapterService";
 import { getLessonsByChapterId } from "../../services/lessonService";
-import ChapterCard from "../../components/learn/ChapterCard";
 import LessonCard from "../../components/learn/LessonCard";
 import { ChapterResponse } from "../../interfaces/responses/ChapterResponse";
 import { LessonResponse } from "../../interfaces/responses/LessonResponse";
 
-export default function ChapterPage() {
+export default function Chapter() {
   const { chapterId } = useParams<{ chapterId: string }>();
   const [chapter, setChapter] = useState<ChapterResponse | null>(null);
   const [lessons, setLessons] = useState<LessonResponse[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchChapterAndLessons() {
       try {
+        // console.log("On chapter page", chapterId);
         if (chapterId) {
           const chapterData = await getChapterById(Number(chapterId));
+          // console.log("Chapter data: ", chapterData);
           setChapter(chapterData);
 
           const lessonsData = await getLessonsByChapterId(Number(chapterId));
@@ -27,11 +29,26 @@ export default function ChapterPage() {
         }
       } catch (error) {
         console.error("Error fetching chapter or lessons:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchChapterAndLessons();
-  }, [chapterId]);
+  }, [chapterId, chapter, lessons]);
+
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  }
 
   return (
     <Container className="my-5">

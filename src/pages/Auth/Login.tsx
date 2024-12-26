@@ -10,8 +10,8 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
-import { useAuth } from "../../contexts/AuthContext";
 import LearningIllustration from "../../assets/images/register-learning.png";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");

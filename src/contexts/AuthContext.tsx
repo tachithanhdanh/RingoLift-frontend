@@ -1,5 +1,5 @@
 // contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { User } from "../interfaces/models/User";
 import { LogoutRequest } from "../interfaces/requests/LogoutRequest";
 import { logoutUser } from "../services/authService";
@@ -20,20 +20,14 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuthContext must be used within an AuthProvider");
-  }
-  return context;
-};
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     // Lấy dữ liệu người dùng từ localStorage nếu có
@@ -41,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setLoading(false); // Set loading to false after initialization
   }, []);
 
   const login = (userData: User) => {
@@ -71,8 +66,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isAuthenticated = user !== null;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
