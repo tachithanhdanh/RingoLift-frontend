@@ -41,7 +41,7 @@ export const getAllMistakes = async (): Promise<MistakeResponse[]> => {
     const response = await api.get<ResponseObject<MistakeResponse[]>>(
       "/mistakes"
     );
-    return response.data.data;
+    return response.data.data || [];  // Ensure fallback if data is undefined
   } catch (error) {
     throw new Error(handleApiError(error));
   }

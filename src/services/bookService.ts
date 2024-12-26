@@ -20,12 +20,16 @@ export const createBook = async (
   }
 };
 
-// Get all books
 export const getAllBooks = async (): Promise<BookResponse[]> => {
   try {
     const response = await api.get<ResponseObject<BookResponse[]>>("/books");
-    return response.data.data;
+    console.log('API Response:', response);
+    if (response?.data?.data) {
+      return response.data.data;
+    }
+    return [];
   } catch (error) {
+    console.error('API Error:', error);
     throw new Error(handleApiError(error));
   }
 };
