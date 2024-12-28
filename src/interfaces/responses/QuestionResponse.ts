@@ -1,13 +1,13 @@
-import { BaseResponse } from "./BaseResponse";
-import { QuestionTypeResponse } from "./QuestionTypeResponse";
+// /src/interfaces/responses/QuizQuestionResponse.ts
+import { AnswerResponse } from "./AnswerResponse";
 
-export interface QuestionResponse extends BaseResponse {
+export interface QuestionResponse {
   id: number;
   content: string;
   audioUrl?: string;
   hint?: string;
-  type: QuestionTypeResponse;
-  lessons?: LessonResponse[];
+  typeId: number; // 1: MULTIPLE_CHOICE, 2: FILL_IN_THE_BLANK
+  correctAnswer: string;
+  createdAt: string;
+  updatedAt: string;
 }
-
-

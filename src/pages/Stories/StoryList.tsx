@@ -62,7 +62,8 @@ const StoryList: React.FC = () => {
   };
 
   const handleClick = (id: string) => {
-    navigate(`/story/${id}`);
+    // Navigate to the story detail page with the story ID
+    navigate(`/private/story/${id}`);
   };
 
   return (

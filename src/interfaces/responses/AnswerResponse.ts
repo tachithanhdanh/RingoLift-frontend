@@ -1,9 +1,9 @@
-import { BaseResponse } from "./BaseResponse";
-import { QuestionResponse } from "./QuestionResponse";
-
-export interface AnswerResponse extends BaseResponse {
+// /src/interfaces/responses/AnswerResponse.ts
+export interface AnswerResponse {
   id: number;
+  questionId: number;
   content: string;
-  isCorrect?: boolean;
-  question: QuestionResponse;
+  isCorrect: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -6,8 +6,6 @@ interface StoryCardProps {
   genre: string;
   publishedDate: string;
   description: string;
-  createdAt: string;
-  updatedAt: string;
   onClick: () => void;
 }
 

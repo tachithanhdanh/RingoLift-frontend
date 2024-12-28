@@ -3,51 +3,83 @@ import { useNavigate } from 'react-router-dom';
 import { getAllMistakes } from '../../services/mistakeService';
 import { getCorrectAnswersByQuestionId } from '../../services/answerService';
 import { getQuestionById } from '../../services/questionService';
+import { getLessonById } from '../../services/lessonService';
 import { MistakeResponse } from '../../interfaces/responses/MistakeResponse';
 import { AnswerResponse } from '../../interfaces/responses/AnswerResponse';
 import { QuestionResponse } from '../../interfaces/responses/QuestionResponse';
+import { LessonResponse } from '../../interfaces/responses/LessonResponse';
 
 const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
     const navigate = useNavigate();
     const [mistakes, setMistakes] = useState<MistakeResponse[]>([]);
     const [correctAnswers, setCorrectAnswers] = useState<Record<number, AnswerResponse[]>>({});
     const [questions, setQuestions] = useState<Record<number, QuestionResponse>>({});
+    const [lessons, setLessons] = useState<Record<number, LessonResponse>>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const mistakesPerPage = 10;
 
     useEffect(() => {
         const fetchMistakes = async () => {
             try {
                 const response = await getAllMistakes();
-                const mistakesData = response.data;
-                setMistakes(mistakesData);
+                if (!Array.isArray(response.data)) {
+                    throw new Error('Expected mistakesData to be an array');
+                }
 
-                const answersPromises = mistakesData.map(mistake =>
+                setMistakes(response.data);
+
+                const validMistakes = response.data.filter(mistake =>
+                    typeof mistake.question_id === 'number' && mistake.question_id > 0
+                );
+
+                if (validMistakes.length === 0) {
+                    setLoading(false);
+                    return;
+                }
+
+                const answersPromises = validMistakes.map(mistake =>
                     getCorrectAnswersByQuestionId(mistake.question_id)
                 );
-                const answersResults = await Promise.all(answersPromises);
 
-                const questionsPromises = mistakesData.map(mistake =>
+                const questionsPromises = validMistakes.map(mistake =>
                     getQuestionById(mistake.question_id)
                 );
-                const questionsResults = await Promise.all(questionsPromises);
 
-                const answersMap = mistakesData.reduce<Record<number, AnswerResponse[]>>((acc, mistake, index) => {
+                const lessonsPromises = validMistakes.map(mistake =>
+                    getLessonById(mistake.lesson_id) // Lấy thông tin bài học
+                );
+
+                const [answersResults, questionsResults, lessonsResults] = await Promise.all([
+                    Promise.all(answersPromises),
+                    Promise.all(questionsPromises),
+                    Promise.all(lessonsPromises),
+                ]);
+
+                const answersMap = validMistakes.reduce<Record<number, AnswerResponse[]>>((acc, mistake, index) => {
                     acc[mistake.question_id] = answersResults[index];
                     return acc;
                 }, {});
 
-                const questionsMap = mistakesData.reduce<Record<number, QuestionResponse>>((acc, mistake, index) => {
-                    acc[mistake.question_id] = questionsResults[index]?.data;
+                const questionsMap = validMistakes.reduce<Record<number, QuestionResponse>>((acc, mistake, index) => {
+                    acc[mistake.question_id] = questionsResults[index];
+                    return acc;
+                }, {});
+
+                const lessonsMap = validMistakes.reduce<Record<number, LessonResponse>>((acc, mistake, index) => {
+                    acc[mistake.lesson_id] = lessonsResults[index]; // Thêm thông tin bài học vào map
                     return acc;
                 }, {});
 
                 setCorrectAnswers(answersMap);
                 setQuestions(questionsMap);
+                setLessons(lessonsMap);
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching mistakes:', err);
-                setError(err.response?.data?.message || 'Failed to fetch mistakes');
+                setError(err.message || 'Failed to fetch mistakes');
                 setLoading(false);
             }
         };
@@ -55,28 +87,36 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
         fetchMistakes();
     }, [userId]);
 
-    const handleReviewToggle = (mistake) => {
-        const question = questions[mistake.question_id];
+    const handleReviewToggle = (mistake: MistakeResponse) => {
+        const question = questions[mistake.questionId];
+
         if (!question) {
             console.error(`Question not found for mistake with ID ${mistake.id}`);
             return;
         }
 
-        const correctAnswerList = correctAnswers[mistake.question_id]?.map(ans => ans.content).join(', ') || 'N/A';
+        const correctAnswerList = correctAnswers[mistake.questionId]?.map(ans => ans.content).join(', ') || 'No correct answers found';
 
-        console.log('Navigating with mistake:', mistake);
-
-        navigate(`/mistakes/${mistake.id}`, {
+        navigate(`/private/mistakes/${mistake.id}`, {
             state: {
                 question: question.content,
-                yourAnswer: mistake.your_answer,
+                yourAnswer: mistake.yourAnswer,
                 correctAnswer: correctAnswerList,
                 explanation: question.hint,
-                date: mistake.updated_at
-            }
+                date: mistake.updatedAt,
+            },
         });
     };
 
+    // Pagination logic
+    const indexOfLastMistake = currentPage * mistakesPerPage;
+    const indexOfFirstMistake = indexOfLastMistake - mistakesPerPage;
+    const currentMistakes = mistakes.slice(indexOfFirstMistake, indexOfLastMistake);
+    const totalPages = Math.ceil(mistakes.length / mistakesPerPage);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -92,44 +132,64 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
             {mistakes.length === 0 ? (
                 <p>No mistakes found.</p>
             ) : (
-                <table className="mistake-table">
-                    <thead>
-                        <tr>
-                            <th>ID Mistake</th>
-                            <th>Question Content</th>
-                            <th>Your Answer</th>
-                            <th>Correct Answer</th>
-                            <th>Date Taken</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {mistakes.map((mistake) => {
-                            const questionContent = questions[mistake.question_id]?.content || 'N/A';
-                            const correctAnswerList = correctAnswers[mistake.question_id]?.length
-                                ? correctAnswers[mistake.question_id].map(ans => ans.content).join(', ')
-                                : 'N/A';
+                <>
+                    <table className="mistake-table">
+                        <thead>
+                            <tr>
+                                <th>ID Mistake</th>
+                                <th>Question Content</th>
+                                <th>Chapter</th>
+                                <th>Lesson</th>
+                                <th>Your Answer</th>
+                                <th>Correct Answer</th>
+                                <th>Date Taken</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentMistakes.map((mistake) => {
+                                const questionContent = questions[mistake.questionId]?.content || 'Question not found';
+                                const chapter = lessons[mistake.lessonId]?.chapter || 'N/A'; // Lấy thông tin chương
+                                const lesson = lessons[mistake.lessonId]?.name || 'N/A'; // Lấy tên bài học
+                                const correctAnswerList = correctAnswers[mistake.questionId]?.map(ans => ans.content).join(', ') || 'No correct answers found';
+                                const dateTaken = mistake.updatedAt ? new Date(mistake.updatedAt).toLocaleDateString() : 'Invalid Date';
 
-                            return (
-                                <tr key={mistake.id}>
-                                    <td>{mistake.id}</td>
-                                    <td>{questionContent}</td>
-                                    <td>{mistake.your_answer || 'N/A'}</td>
-                                    <td>{correctAnswerList}</td>
-                                    <td>{new Date(mistake.updated_at).toLocaleDateString() || 'N/A'}</td>
-                                    <td>
-                                        <button
-                                            className={mistake.active ? 'btn-reviewed' : 'btn-not-reviewed'}
-                                            onClick={() => handleReviewToggle(mistake)}
-                                        >
-                                            {mistake.active ? 'Reviewed' : 'Not Reviewed'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                                return (
+                                    <tr key={mistake.id}>
+                                        <td>{mistake.id}</td>
+                                        <td>{questionContent}</td>
+                                        <td>{chapter}</td>
+                                        <td>{lesson}</td>
+                                        <td>{mistake.yourAnswer || 'N/A'}</td>
+                                        <td>{correctAnswerList}</td>
+                                        <td>{dateTaken}</td>
+                                        <td>
+                                            <button
+                                                className={mistake.active ? 'btn-reviewed' : 'btn-not-reviewed'}
+                                                onClick={() => handleReviewToggle(mistake)}
+                                            >
+                                                {mistake.active ? 'Reviewed' : 'Not Reviewed'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+
+                    {/* Pagination Controls */}
+                    <div className="pagination">
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => handlePageChange(index + 1)}
+                                className={currentPage === index + 1 ? 'active' : ''}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
+                </>
             )}
             <style>
                 {`
@@ -176,6 +236,30 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                 }
 
                 .btn-reviewed:hover, .btn-not-reviewed:hover {
+                    opacity: 0.8;
+                }
+
+                .pagination {
+                    margin-top: 20px;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .pagination button {
+                    margin: 0 5px;
+                    padding: 10px 15px;
+                    border: none;
+                    border-radius: 5px;
+                    background-color: #007bff;
+                    color: white;
+                    cursor: pointer;
+                }
+
+                .pagination button.active {
+                    background-color: #0056b3;
+                }
+
+                .pagination button:hover {
                     opacity: 0.8;
                 }
                 `}

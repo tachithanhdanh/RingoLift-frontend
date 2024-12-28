@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./api"; // Ensure proper import of api
 import { QuestionRequest } from "../interfaces/requests/QuestionRequest";
 import { QuestionTypeRequest } from "../interfaces/requests/QuestionTypeRequest";
 import { QuestionResponse } from "../interfaces/responses/QuestionResponse";
