@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllMistakes } from '../../services/mistakeService';
-import { getCorrectAnswersByQuestionId } from '../../services/answerService';
+import { getAllMistakes, updateMistake } from '../../services/mistakeService';
+import { getAnswersByQuestionId } from '../../services/answerService';
 import { getQuestionById } from '../../services/questionService';
 import { getLessonById } from '../../services/lessonService';
 import { MistakeResponse } from '../../interfaces/responses/MistakeResponse';
 import { AnswerResponse } from '../../interfaces/responses/AnswerResponse';
 import { QuestionResponse } from '../../interfaces/responses/QuestionResponse';
-import { LessonResponse } from '../../interfaces/responses/LessonResponse'; // Interface cho Lesson
+import { LessonResponse } from '../../interfaces/responses/LessonResponse';
 
 const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
     const navigate = useNavigate();
@@ -17,23 +17,23 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
     const [lessons, setLessons] = useState<Record<number, LessonResponse>>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Pagination states
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const mistakesPerPage = 10;
+    const mistakesPerPage = 8;
 
     useEffect(() => {
         const fetchMistakes = async () => {
             try {
                 const response = await getAllMistakes();
+                console.log('API Response:', response.data);
                 if (!Array.isArray(response.data)) {
                     throw new Error('Expected mistakesData to be an array');
                 }
 
-                setMistakes(response.data);
+                const userMistakes = response.data.filter(mistake => String(mistake.user_id) === String(userId));
+                setMistakes(userMistakes);
 
-                const validMistakes = response.data.filter(mistake =>
-                    typeof mistake.question_id === 'number' && mistake.question_id > 0
+                const validMistakes = userMistakes.filter(mistake =>
+                    typeof mistake.questionId === 'number' && mistake.questionId > 0
                 );
 
                 if (validMistakes.length === 0) {
@@ -42,35 +42,44 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                 }
 
                 const answersPromises = validMistakes.map(mistake =>
-                    getCorrectAnswersByQuestionId(mistake.question_id)
+                    getAnswersByQuestionId(mistake.questionId)
                 );
 
                 const questionsPromises = validMistakes.map(mistake =>
-                    getQuestionById(mistake.question_id)
+                    getQuestionById(mistake.questionId)
                 );
 
                 const lessonsPromises = validMistakes.map(mistake =>
-                    getLessonById(mistake.lesson_id) // Lấy thông tin bài học
+                    getLessonById(mistake.lessonId)
                 );
 
                 const [answersResults, questionsResults, lessonsResults] = await Promise.all([
-                    Promise.all(answersPromises),
-                    Promise.all(questionsPromises),
-                    Promise.all(lessonsPromises),
+                    Promise.all(answersPromises.map(p => p.catch(error => ({ error })))),
+                    Promise.all(questionsPromises.map(p => p.catch(error => ({ error })))),
+                    Promise.all(lessonsPromises.map(p => p.catch(error => ({ error })))),
                 ]);
 
                 const answersMap = validMistakes.reduce<Record<number, AnswerResponse[]>>((acc, mistake, index) => {
-                    acc[mistake.question_id] = answersResults[index];
+                    const result = answersResults[index];
+                    if (!result.error && Array.isArray(result)) {
+                        acc[mistake.questionId] = result;
+                    }
                     return acc;
                 }, {});
 
                 const questionsMap = validMistakes.reduce<Record<number, QuestionResponse>>((acc, mistake, index) => {
-                    acc[mistake.question_id] = questionsResults[index];
+                    const result = questionsResults[index];
+                    if (!result.error) {
+                        acc[mistake.questionId] = result;
+                    }
                     return acc;
                 }, {});
 
                 const lessonsMap = validMistakes.reduce<Record<number, LessonResponse>>((acc, mistake, index) => {
-                    acc[mistake.lesson_id] = lessonsResults[index]; // Thêm thông tin bài học vào map
+                    const result = lessonsResults[index];
+                    if (!result.error) {
+                        acc[mistake.lessonId] = result;
+                    }
                     return acc;
                 }, {});
 
@@ -78,8 +87,8 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                 setQuestions(questionsMap);
                 setLessons(lessonsMap);
                 setLoading(false);
-            } catch (err) {
-                setError(err.message || 'Failed to fetch mistakes');
+            } catch (err: any) {
+                setError(err.response?.data?.message || 'Failed to fetch mistakes');
                 setLoading(false);
             }
         };
@@ -87,7 +96,24 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
         fetchMistakes();
     }, [userId]);
 
-    const handleReviewToggle = (mistake: MistakeResponse) => {
+    const handleReviewToggle = async (mistake: MistakeResponse) => {
+        console.log('Before update:', mistake);
+        if (!mistake.active) {
+            try {
+                const updatedMistake = await updateMistake(mistake.id, {
+                    ...mistake,
+                    is_active: true,
+                });
+                setMistakes(prev => prev.map(m => (m.id === mistake.id ? { ...m, active: true } : m)));
+                console.log('Updated Mistake:', updatedMistake);
+
+            } catch (error: any) {
+                console.error('Error updating mistake:', error);
+                setError('Failed to update mistake status');
+                return;
+            }
+        }
+
         const question = questions[mistake.questionId];
 
         if (!question) {
@@ -95,7 +121,9 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
             return;
         }
 
-        const correctAnswerList = correctAnswers[mistake.questionId]?.map(ans => ans.content).join(', ') || 'No correct answers found';
+        const correctAnswerList = correctAnswers[mistake.questionId]
+            ?.map(ans => ans.content)
+            .join(', ') || 'No correct answers found';
 
         navigate(`/private/mistakes/${mistake.id}`, {
             state: {
@@ -108,7 +136,6 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
         });
     };
 
-    // Pagination logic
     const indexOfLastMistake = currentPage * mistakesPerPage;
     const indexOfFirstMistake = indexOfLastMistake - mistakesPerPage;
     const currentMistakes = mistakes.slice(indexOfFirstMistake, indexOfLastMistake);
@@ -137,30 +164,31 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                         <thead>
                             <tr>
                                 <th>ID Mistake</th>
-                                <th>Question Content</th>
+                                <th>Question</th>
                                 <th>Chapter</th>
                                 <th>Lesson</th>
-                                <th>Your Answer</th>
+                                <th className="incorrect-answer">Incorrect Answer</th>
                                 <th>Correct Answer</th>
-                                <th>Date Taken</th>
+                                <th>Date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentMistakes.map((mistake) => {
                                 const questionContent = questions[mistake.questionId]?.content || 'Question not found';
-                                const chapter = lessons[mistake.lessonId]?.chapter || 'N/A'; // Lấy thông tin chương
-                                const lesson = lessons[mistake.lessonId]?.name || 'N/A'; // Lấy tên bài học
-                                const correctAnswerList = correctAnswers[mistake.questionId]?.map(ans => ans.content).join(', ') || 'No correct answers found';
+                                const lesson = lessons[mistake.lessonId];
+                                const correctAnswerList = correctAnswers[mistake.questionId]
+                                    ?.map(ans => ans.content)
+                                    .join(', ') || 'No correct answers found';
                                 const dateTaken = mistake.updatedAt ? new Date(mistake.updatedAt).toLocaleDateString() : 'Invalid Date';
 
                                 return (
                                     <tr key={mistake.id}>
                                         <td>{mistake.id}</td>
                                         <td>{questionContent}</td>
-                                        <td>{chapter}</td>
-                                        <td>{lesson}</td>
-                                        <td>{mistake.yourAnswer || 'N/A'}</td>
+                                        <td>{lesson?.chapterName || 'N/A'}</td>
+                                        <td>{lesson?.title || 'N/A'}</td>
+                                        <td className="incorrect-answer">{mistake.yourAnswer || 'N/A'}</td>
                                         <td>{correctAnswerList}</td>
                                         <td>{dateTaken}</td>
                                         <td>
@@ -177,7 +205,6 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                         </tbody>
                     </table>
 
-                    {/* Pagination Controls */}
                     <div className="pagination">
                         {Array.from({ length: totalPages }, (_, index) => (
                             <button
@@ -215,6 +242,10 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
 
                 .mistake-table tr:hover {
                     background-color: #f1f1f1;
+                }
+
+                .incorrect-answer {
+                    color: red; /* Color for "Incorrect Answer" column */
                 }
 
                 .btn-reviewed {
