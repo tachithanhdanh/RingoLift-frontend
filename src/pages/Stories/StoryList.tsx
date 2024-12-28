@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import StoryCard from '../../components/Stories/StoryCard';
-import { getAllBooks } from '../../services/bookService';
-import { getAllGenres } from '../../services/bookGenreService';
-import { BookResponse } from '../../interfaces/responses/BookResponse';
-import { BookGenreResponse } from '../../interfaces/responses/BookGenreResponse';
-import NavBar from '../../components/common/NavBar';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import StoryCard from "../../components/stories/StoryCard";
+import { getAllBooks } from "../../services/bookService";
+import { getAllGenres } from "../../services/bookGenreService";
+import { BookResponse } from "../../interfaces/responses/BookResponse";
+import { BookGenreResponse } from "../../interfaces/responses/BookGenreResponse";
+import NavBar from "../../components/common/NavBar";
 
 const StoryList: React.FC = () => {
   const [stories, setStories] = useState<BookResponse[]>([]);
@@ -13,7 +13,7 @@ const StoryList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const storiesPerPage = 3;
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ const StoryList: React.FC = () => {
         const genreResponse = await getAllGenres();
         setGenres(genreResponse || []);
       } catch (err) {
-        setError('Failed to fetch stories or genres');
+        setError("Failed to fetch stories or genres");
         console.error(err);
       } finally {
         setLoading(false);
@@ -45,7 +45,7 @@ const StoryList: React.FC = () => {
 
   const getGenreName = (genreId: number) => {
     const genre = genres.find((g) => g.id === genreId);
-    return genre?.genreType || 'Unknown Genre';
+    return genre?.genreType || "Unknown Genre";
   };
 
   const filteredStories = stories.filter((story) =>
@@ -54,7 +54,10 @@ const StoryList: React.FC = () => {
 
   const indexOfLastStory = currentPage * storiesPerPage;
   const indexOfFirstStory = indexOfLastStory - storiesPerPage;
-  const currentStories = filteredStories.slice(indexOfFirstStory, indexOfLastStory);
+  const currentStories = filteredStories.slice(
+    indexOfFirstStory,
+    indexOfLastStory
+  );
   const totalPages = Math.ceil(filteredStories.length / storiesPerPage);
 
   const handlePageChange = (page: number) => {
@@ -118,7 +121,9 @@ const StoryList: React.FC = () => {
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`btn btn-outline-primary ${currentPage === index + 1 ? 'active' : ''}`}
+            className={`btn btn-outline-primary ${
+              currentPage === index + 1 ? "active" : ""
+            }`}
           >
             {index + 1}
           </button>
