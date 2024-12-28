@@ -9,6 +9,7 @@ export interface ResponseObject<
     | void
     | SimpleResponse
     | SimpleResponse[]
+    | boolean
 > {
   message: string;
   status: HttpStatus;
