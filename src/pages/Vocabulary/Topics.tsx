@@ -36,8 +36,8 @@ const Topics: React.FC = () => {
     fetchTopics();
   }, []);
 
-  const handleTopicClick = (topicId: number) => {
-    navigate(`${topicId}`);
+  const handleTopicClick = (topicId: number, topicName: string) => {
+    navigate(`${topicId}`, { state: { topicName } });
   };
   
 
@@ -79,7 +79,7 @@ const Topics: React.FC = () => {
                   <Col key={topic.id} md={6} className="mb-4">
                     <Card
                       className="shadow-sm h-100 cursor-pointer"
-                      onClick={() => handleTopicClick(topic.id)}
+                      onClick={() => handleTopicClick(topic.id, topic.name)}
                       style={{ cursor: "pointer" }}
                     >
                       <Card.Body className="d-flex align-items-center justify-content-center">

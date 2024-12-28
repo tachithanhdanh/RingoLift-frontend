@@ -8,12 +8,14 @@ import {
   Alert,
   Button,
 } from "react-bootstrap";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { WordResponse } from "../../interfaces/responses/WordResponse";
 import { getWordsByTopic } from "../../services/WordService"; // Đảm bảo import đúng
 
 const Flashcard: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
+  const location = useLocation();
+  const topicName = location.state?.topicName || "Topic";
   const [words, setWords] = useState<WordResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,19 +82,18 @@ const Flashcard: React.FC = () => {
 
   return (
     <Container fluid className="min-vh-100 d-flex flex-column align-items-center bg-light">
-      <header className="w-100 d-flex justify-content-between align-items-center px-4 py-3 bg-primary text-white">
-        <Link to="/vocabulary" className="text-white">&larr; Back</Link>
-        <h2 className="m-0">Topic: {topicId}</h2>
+      <header className="w-100 d-flex justify-content-center align-items-center position-relative px-4 py-3 text-dark">
+        <Link to="/private/vocabulary" className="position-absolute start-0 px-4">&larr; Back</Link>
+        <h2 className="m-0">Topic: {topicName}</h2>
       </header>
       <main className="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-        <h1 className="fw-bold mb-4 text-center text-orange">Flashcard</h1>
         <Card
           className="shadow p-4 rounded-4 text-center"
-          style={{ width: "300px", cursor: "pointer" }}
+          style={{ width: "800px", height: "400px", cursor: "pointer" }}
           onClick={handleFlip}
         >
           <Card.Body>
-            <Card.Title className="text-orange fw-bold">
+            <Card.Title className="text-orange fw-bold" style={{ fontSize: "4rem" }}>
               {showMeaning ? currentWord.meaning : currentWord.word}
             </Card.Title>
             <p className="text-muted">{showMeaning ? currentWord.pronunciation : "(Tap to flip)"}</p>
@@ -106,19 +107,19 @@ const Flashcard: React.FC = () => {
             Next
           </Button>
         </div>
+        <a className="w-100 d-flex justify-content-center align-items-center py-3 bg-light">
+          <div className="progress w-50">
+            <div
+              className="progress-bar bg-success"
+              role="progressbar"
+              style={{ width: `${((currentIndex + 1) / words.length) * 100}%` }}
+              aria-valuenow={(currentIndex + 1) / words.length * 100}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            ></div>
+          </div>
+        </a>
       </main>
-      <footer className="w-100 d-flex justify-content-center align-items-center py-3 bg-light">
-        <div className="progress w-50">
-          <div
-            className="progress-bar bg-success"
-            role="progressbar"
-            style={{ width: `${((currentIndex + 1) / words.length) * 100}%` }}
-            aria-valuenow={(currentIndex + 1) / words.length * 100}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          ></div>
-        </div>
-      </footer>
     </Container>
   );
 };

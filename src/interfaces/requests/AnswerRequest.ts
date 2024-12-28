@@ -1,6 +1,6 @@
+// /src/interfaces/requests/AnswerRequest.ts
 export interface AnswerRequest {
-    content: string;
-    questionId: number;
-    isCorrect?: boolean;
-  }
-  
+  questionId: number;
+  content: string;
+  isCorrect: boolean;
+}
