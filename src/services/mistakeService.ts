@@ -1,4 +1,4 @@
-import api from "./api"; // Import API configuration
+import api from "./api";
 import { MistakeRequest } from "../interfaces/requests/MistakeRequest";
 import { MistakeResponse } from "../interfaces/responses/MistakeResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
@@ -31,7 +31,7 @@ export const getAllMistakes = async (): Promise<ResponseObject<MistakeResponse[]
         const response = await api.get('/mistakes');
         return response.data; // Ensure this returns an array
     } catch (error) {
-        console.error('Error fetching all mistakes:', error);
+        console.error('Error fetching all mistakes:', error.response ? error.response.data : error);
         throw new Error(error.response?.data?.message || 'An error occurred while fetching mistakes');
     }
 };
