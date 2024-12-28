@@ -25,7 +25,9 @@ export const createQuestion = async (
 // Get all questions
 export const getAllQuestions = async (): Promise<QuestionResponse[]> => {
   try {
-    const response = await api.get<ResponseObject<QuestionResponse[]>>("/questions");
+    const response = await api.get<ResponseObject<QuestionResponse[]>>(
+      "/questions"
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -33,9 +35,13 @@ export const getAllQuestions = async (): Promise<QuestionResponse[]> => {
 };
 
 // Get question by ID
-export const getQuestionById = async (questionId: number): Promise<QuestionResponse> => {
+export const getQuestionById = async (
+  questionId: number
+): Promise<QuestionResponse> => {
   try {
-    const response = await api.get<ResponseObject<QuestionResponse>>(`/questions/${questionId}`);
+    const response = await api.get<ResponseObject<QuestionResponse>>(
+      `/questions/${questionId}`
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -43,9 +49,13 @@ export const getQuestionById = async (questionId: number): Promise<QuestionRespo
 };
 
 // Get questions by type ID
-export const getQuestionsByTypeId = async (typeId: number): Promise<QuestionResponse[]> => {
+export const getQuestionsByTypeId = async (
+  typeId: number
+): Promise<QuestionResponse[]> => {
   try {
-    const response = await api.get<ResponseObject<QuestionResponse[]>>(`/questions/by-type/${typeId}`);
+    const response = await api.get<ResponseObject<QuestionResponse[]>>(
+      `/questions/by-type/${typeId}`
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -93,9 +103,13 @@ export const createQuestionType = async (
 };
 
 // Get all question types
-export const getAllQuestionTypes = async (): Promise<QuestionTypeResponse[]> => {
+export const getAllQuestionTypes = async (): Promise<
+  QuestionTypeResponse[]
+> => {
   try {
-    const response = await api.get<ResponseObject<QuestionTypeResponse[]>>("/questions/types");
+    const response = await api.get<ResponseObject<QuestionTypeResponse[]>>(
+      "/questions/types"
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -103,9 +117,13 @@ export const getAllQuestionTypes = async (): Promise<QuestionTypeResponse[]> => 
 };
 
 // Get question type by ID
-export const getQuestionTypeById = async (typeId: number): Promise<QuestionTypeResponse> => {
+export const getQuestionTypeById = async (
+  typeId: number
+): Promise<QuestionTypeResponse> => {
   try {
-    const response = await api.get<ResponseObject<QuestionTypeResponse>>(`/questions/types/${typeId}`);
+    const response = await api.get<ResponseObject<QuestionTypeResponse>>(
+      `/questions/types/${typeId}`
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -138,9 +156,13 @@ export const deleteQuestionType = async (typeId: number): Promise<void> => {
 };
 
 // Get lessons by question ID
-export const getLessonsByQuestionId = async (questionId: number): Promise<any[]> => {
+export const getLessonsByQuestionId = async (
+  questionId: number
+): Promise<any[]> => {
   try {
-    const response = await api.get<ResponseObject<any[]>>(`/questions/${questionId}/lessons`);
+    const response = await api.get<ResponseObject<any[]>>(
+      `/questions/${questionId}/lessons`
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -148,7 +170,9 @@ export const getLessonsByQuestionId = async (questionId: number): Promise<any[]>
 };
 
 // Remove all lessons from question
-export const removeAllLessonsFromQuestion = async (questionId: number): Promise<void> => {
+export const removeAllLessonsFromQuestion = async (
+  questionId: number
+): Promise<void> => {
   try {
     await api.delete<ResponseObject<void>>(`/questions/${questionId}/lessons`);
   } catch (error) {

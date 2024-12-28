@@ -5,7 +5,6 @@ import { AnswerResponse } from "../interfaces/responses/AnswerResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
 import { handleApiError } from "../utils/errorHandler";
 
-
 /**
  * Lấy tất cả các tùy chọn (answers) cho một câu hỏi.
  * GET /api/v1/answers/{questionId}
