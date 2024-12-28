@@ -45,6 +45,20 @@ export const getGoal = async (
     }
 };
 
+// Lấy goal theo user id
+export const getGoalByUserId = async (
+    userId: number
+): Promise<GoalResponse> => {
+    try {
+        const response = await api.get<ResponseObject<GoalResponse>>(
+            `/goals/user/${userId}`
+        );
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Cập nhật goal theo id
 export const updateGoal = async (
     goalId: number,

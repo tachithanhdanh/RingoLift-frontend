@@ -45,6 +45,21 @@ export const getDailyProgressById = async (
     }
 };
 
+// Lấy một daily progress theo userId và createdAt
+export const getDailyProgressByUserIdAndCreatedAt = async (
+    userId: number,
+    createdAt: string
+): Promise<DailyProgressResponse> => {
+    try {
+        const response = await api.get<ResponseObject<DailyProgressResponse>>(
+            `daily-progresses?user_id=${userId}&created_at=${createdAt}`, // example: user_id=20&created_at=2024-12-28
+        );
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Cập nhật daily progress
 export const updateDailyProgress = async (
     dailyProgressId: number,
