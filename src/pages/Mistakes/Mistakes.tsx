@@ -7,7 +7,7 @@ import { getLessonById } from '../../services/lessonService';
 import { MistakeResponse } from '../../interfaces/responses/MistakeResponse';
 import { AnswerResponse } from '../../interfaces/responses/AnswerResponse';
 import { QuestionResponse } from '../../interfaces/responses/QuestionResponse';
-import { LessonResponse } from '../../interfaces/responses/LessonResponse';
+import { LessonResponse } from '../../interfaces/responses/LessonResponse'; // Interface cho Lesson
 
 const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
     const navigate = useNavigate();
