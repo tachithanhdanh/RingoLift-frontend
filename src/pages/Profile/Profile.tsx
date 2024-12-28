@@ -1,8 +1,38 @@
 import "./Profile.css";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import NavBar from "../../components/common/NavBar";
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { getUserById } from "../../services/userService";
+import { User } from "../../interfaces/models/User";
+// import { toCamelCase } from "../../utils/caseConverter";
 
 function Profile() {
+  const { userId } = useParams(); // Retrieve userId from the route
+  const [profile, setProfile] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (userId) {
+        try {
+          const fetchedProfile = await getUserById(Number(userId)); // Fetch user profile data
+          setProfile(fetchedProfile);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
+    }
+
+    fetchProfile();
+  }, [userId]);
+
+  useEffect(() => {
+    console.log("Profile updated:", profile);
+  }, [profile]);
+
+  if (!profile) {
+    return <div>Loading...</div>; // Show a loading state while fetching data
+  }
+
   return (
     <div className="min-vh-100 bg-light">
       <NavBar />
@@ -15,13 +45,12 @@ function Profile() {
                 <div className="text-center mb-4">
                   <div className="position-relative d-inline-block mb-3">
                     <img
-                      src="https://via.placeholder.com/150"
+                      src={profile.picture || "https://via.placeholder.com/150"}
                       alt="Profile Avatar"
                       className="avatar rounded-circle"
                     />
                   </div>
-                  {/* <h4 className="fw-bold mb-1">Nguyen Hung</h4> */}
-                  <p className="text-muted mb-0">@csm1337</p>
+                  <p className="text-muted mb-0">@{profile.username}</p>
                 </div>
                 <hr className="my-4" />
                 <h5 className="fw-bold mb-4">Achievements</h5>
@@ -84,25 +113,16 @@ function Profile() {
                 <h4 className="fw-bold mb-4">Profile Information</h4>
                 <div className="mb-4">
                   <label className="form-label fw-bold">Full Name</label>
-                  <p className="text-muted">Nguyen Hung</p>
+                  <p className="text-muted">{profile.firstName} {profile.lastName}</p>
                 </div>
                 <div className="mb-4">
                   <label className="form-label fw-bold">Date of Birth</label>
-                  <p className="text-muted">12/07/2004</p>
+                  <p className="text-muted">{profile.dateOfBirth}</p>
                 </div>
                 <div className="mb-4">
                   <label className="form-label fw-bold">Email</label>
-                  <p className="text-muted">22120122@student.hcmus.edu.vn</p>
+                  <p className="text-muted">{profile.email}</p>
                 </div>
-                {/* <div className="mb-4">
-                  <label className="form-label fw-bold">Phone Number</label>
-                  <p className="text-muted">+98 0990125006</p>
-                </div>
-                <div className="mb-4">
-                  <label className="form-label fw-bold">Address</label>
-                  <p className="text-muted">157 Trần Hưng Đạo, phường 6 quận 8 thành phố HCM</p>
-                </div>
-                <hr className="my-4" /> */}
                 <h4 className="fw-bold mb-4">Shared Activities</h4>
                 <div>
                   <ul className="list-group">

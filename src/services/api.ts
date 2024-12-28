@@ -30,21 +30,17 @@ api.interceptors.request.use(
 );
 
 // Interceptors xử lý response
+// This interceptor has been moved to AxiosInterceptorProvider.tsx
 api.interceptors.response.use(
   (response): AxiosResponse => {
     if (response.data) {
       // Chuyển data từ snake_case sang camelCase
       response.data = toCamelCase(response.data);
     }
+
     return response;
   },
   (error) => {
-    // Xử lý lỗi
-    const status = error.response?.status;
-    if (status === 401) {
-      // Xử lý lỗi xác thực, ví dụ logout
-      console.error("Unauthorized! Redirecting to login.");
-    }
     return Promise.reject(error.response || error.message);
   }
 );

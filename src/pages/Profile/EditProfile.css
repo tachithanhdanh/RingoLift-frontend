@@ -83,3 +83,7 @@
 .edit-profile .progress-bar.bg-success {
   background-color: #198754 !important;
 }
+
+.field-readonly {
+  cursor: not-allowed; /* Hiển thị biểu tượng không thể chỉnh sửa */
+}
