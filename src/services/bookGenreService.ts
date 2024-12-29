@@ -1,33 +1,54 @@
-import axios from 'axios';
-import { BookGenreResponse } from '../interfaces/responses/BookGenreResponse';
-import { ResponseObject } from '../interfaces/responses/ResponseObject';
+import api from "./api"; // Reuse the shared API configuration
+import { BookGenreResponse } from "../interfaces/responses/BookGenreResponse";
+import { ResponseObject } from "../interfaces/responses/ResponseObject";
+import { BookGenreRequest } from "../interfaces/requests/BookGenreRequest"; // Import the request interface
+import { handleApiError } from "../utils/errorHandler";
 
-// Cấu hình axios
-const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL, // Use the same base URL as the books API
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptors xử lý request
-apiClient.interceptors.request.use(
-  (config) => {
-    // Gắn token vào header
-    const token = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VybmFtZSI6Ik5ndXllbkh1bmcxMjA3Iiwic3ViIjoiTmd1eWVuSHVuZzEyMDciLCJleHAiOjE3MzUwNDIxMTR9.XjETxBOG38Q7aDVS9cW0U3RdZT3xwm_cUdZmpVBWyknRjI1AnZ_siWkCazutSryeg13AA0toT487YtauWQlrsw";
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Fetch all book genres
-export const getAllGenres = async (): Promise<ResponseObject<BookGenreResponse[]>> => {
-  const response = await apiClient.get('/book-genres');
-  return response.data; // Return the response data
+// Create a new book genre
+export const createBookGenre = async (bookGenreRequest: BookGenreRequest): Promise<BookGenreResponse> => {
+  try {
+    const response = await api.post<ResponseObject<BookGenreResponse>>("/book-genres", bookGenreRequest);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
 };
 
-export default apiClient;
+// Fetch all book genres
+export const getAllGenres = async (): Promise<BookGenreResponse[]> => {
+  try {
+    const response = await api.get<ResponseObject<BookGenreResponse[]>>("/book-genres");
+    return response.data.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// Fetch a book genre by id
+export const getBookGenreById = async (id: number): Promise<BookGenreResponse> => {
+  try {
+    const response = await api.get<ResponseObject<BookGenreResponse>>(`/book-genres/${id}`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// Update a book genre by id
+export const updateBookGenre = async (id: number, bookGenreRequest: BookGenreRequest): Promise<BookGenreResponse> => {
+  try {
+    const response = await api.put<ResponseObject<BookGenreResponse>>(`/book-genres/${id}`, bookGenreRequest);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// Delete a book genre by id
+export const deleteBookGenre = async (id: number): Promise<void> => {
+  try {
+    await api.delete<ResponseObject<void>>(`/book-genres/${id}`);
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
