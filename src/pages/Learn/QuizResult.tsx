@@ -1,153 +1,176 @@
 import "./QuizResult.css";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import NavBar from "../../components/common/NavBar";
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Alert } from "react-bootstrap";
+import { getQuestionsByLessonId } from "../../services/lessonService";
+import { getQuestionById } from "../../services/questionService";
+import { getUserAnswerByUserIdAndQuestionId } from "../../services/userAnswerService";
+import { LessonQuestionResponse } from "../../interfaces/responses/LessonQuestionResponse";
+import { UserAnswerResponse } from "../../interfaces/responses/UserAnswerResponse";
+import { useAuth } from "../../hooks/useAuth";
+import { User } from "../../interfaces/models/User";
+import { getUserById } from "../../services/userService";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
+interface ExtendedQuestion extends LessonQuestionResponse {
+  content: string;
+  correctAnswer: string;
+}
 
 function QuizResult() {
-  const achievements = [
-    { icon: "bi-lightning-charge-fill", title: "Chuỗi học tập", value: "7 ngày" },
-    { icon: "bi-trophy-fill", title: "Điểm kinh nghiệm", value: "+150 XP" },
-    { icon: "bi-clock-fill", title: "Thời gian học", value: "45 phút" }
-  ];
+  const { lessonId } = useParams<{ lessonId: string }>();
+  const [questions, setQuestions] = useState<ExtendedQuestion[]>([]);
+  const [userAnswers, setUserAnswers] = useState<UserAnswerResponse[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<User | null>(null);
 
-  const nextLessons = [
-    {
-      title: "Giao tiếp cơ bản",
-      level: "Beginner",
-      duration: "15 phút",
-      progress: 0
-    },
-    {
-      title: "Từ vựng công sở",
-      level: "Intermediate",
-      duration: "20 phút",
-      progress: 0
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user) {
+        try {
+          const fetchedProfile = await getUserById(user.id); // Fetch user profile data
+          setProfile(fetchedProfile);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
     }
-  ];
+
+    fetchProfile();
+  }, [user]);
+
+  // console.log(profile);
+
+  useEffect(() => {
+    console.log('lessonId: ', lessonId);
+
+    if (!lessonId) return;
+
+    console.log('lessonId: ', lessonId);
+
+    const fetchQuizData = async () => {
+      setLoading(true);
+
+      if (profile == null) {
+        return (
+          <Alert variant="danger" className="text-center">
+            Profile is null
+          </Alert>
+        );
+      }
+
+      try {
+        const id = parseInt(lessonId, 10);
+
+        // Fetch questions for the lesson
+        const lessonQuestions = await getQuestionsByLessonId(id);
+
+        // Fetch detailed data for each question
+        const detailedQuestions = await Promise.all(
+          lessonQuestions.map(async (lessonQuestion) => {
+            const questionDetails = await getQuestionById(lessonQuestion.questionId);
+            return {
+              ...lessonQuestion,
+              content: questionDetails.content,
+              correctAnswer: questionDetails.correctAnswer,
+            };
+          })
+        );
+
+        setQuestions(detailedQuestions);
+
+        // Fetch user answers for each question
+        const fetchedUserAnswers = await Promise.all(
+          detailedQuestions.map((question) =>
+            getUserAnswerByUserIdAndQuestionId(profile.id, question.questionId)
+          )
+        );
+
+        setUserAnswers(fetchedUserAnswers);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuizData();
+  }, [lessonId, profile]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  // Calculate total correct answers
+  const correctAnswers = questions.reduce((count, question) => {
+    const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+    return userAnswer?.answerText === question.correctAnswer ? count + 1 : count;
+  }, 0);
 
   return (
     <div className="min-vh-100 bg-light">
       <NavBar />
-      <div className="container navbar-padding">
+      <div className="navbar-padding container">
         <div className="row">
-          {/* Left Sidebar - Achievement Stats */}
-          <div className="col-md-3">
-            <div className="bg-white rounded-4 p-4 shadow-sm mb-4">
-              <h5 className="fw-bold mb-4">Thành tích</h5>
-              {achievements.map((item, index) => (
-                <div key={index} className="d-flex align-items-center mb-3">
-                  <i className={`bi ${item.icon} text-primary fs-4 me-3`}></i>
-                  <div>
-                    <div className="text-muted small">{item.title}</div>
-                    <div className="fw-bold">{item.value}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="bg-white rounded-4 p-4 shadow-sm">
-              <h5 className="fw-bold mb-3">Bảng xếp hạng tuần</h5>
-              <div className="position-relative">
-                <div className="d-flex align-items-center mb-3">
-                  <img src="https://via.placeholder.com/40" alt="User" className="rounded-circle me-2" />
-                  <div className="flex-grow-1">
-                    <div className="fw-bold">Nguyễn Văn A</div>
-                    <div className="text-muted small">1250 XP</div>
-                  </div>
-                  <span className="badge bg-warning">1</span>
-                </div>
-                {/* Add more users here */}
-              </div>
-            </div>
-          </div>
-
           {/* Main Content */}
-          <div className="col-md-6">
+          <div className="col-md-8 offset-md-2">
             <div className="bg-white rounded-4 p-4 shadow-sm">
-              {/* Original Quiz Result Content */}
-              <div className="quiz-result d-flex flex-column align-items-center">
-                <div className="text-center mb-4">
-                  <img
-                    src="https://via.placeholder.com/200"
-                    alt="Quiz Result"
-                    className="avatar rounded-circle mb-3"
-                  />
-                  <h4 className="fw-bold text-orange">Hoàn thành bài học</h4>
-                  <p className="text-muted">Thời gian hoàn thành: <strong>10m26s</strong></p>
-                </div>
-
-                <div className="d-flex justify-content-center align-items-center gap-2 mb-4">
-                  <i className="bi bi-star-fill text-warning fs-3"></i>
-                  <i className="bi bi-star-fill text-warning fs-3"></i>
-                  <i className="bi bi-star-fill text-warning fs-3"></i>
-                  <i className="bi bi-star text-muted fs-3"></i>
-                  <i className="bi bi-star text-muted fs-3"></i>
-                </div>
-
-                <div className="summary mb-4 text-center">
-                  <p className="text-muted">Bạn trả lời đúng <strong>8/10</strong> câu hỏi.</p>
-                </div>
-
-                {/* <div className="suggestions mb-4 w-100">
-                  <h5 className="fw-bold">Gợi ý cải thiện</h5>
-                  <ul className="list-unstyled">
-                    <li className="text-muted">- Xem lại ngữ pháp cơ bản: thì hiện tại đơn.</li>
-                    <li className="text-muted">- Luyện tập từ vựng về chủ đề công việc.</li>
-                    <li className="text-muted">- Cải thiện kỹ năng nghe qua bài tập thực tế.</li>
-                  </ul>
-                </div> */}
-
-                {/* Action Buttons */}
-                <div className="d-flex justify-content-between w-100 gap-3">
-                  <button className="btn btn-primary flex-grow-1 py-3" style={{ borderRadius: '30px' }}>
-                    Xem lại bài học
-                  </button>
-                  <button className="btn btn-success flex-grow-1 py-3" style={{ borderRadius: '30px' }}>
-                    Tiếp tục
-                  </button>
-                </div>
+              <div className="quiz-result text-center">
+                <h4 className="fw-bold text-orange">Hoàn thành bài học</h4>
+                <h6 className="text-muted">
+                  Bạn trả lời đúng <strong>{correctAnswers}/{questions.length}</strong> câu hỏi.
+                </h6>
               </div>
-            </div>
-          </div>
 
-          {/* Right Sidebar - Next Lessons */}
-          <div className="col-md-3">
-            <div className="bg-white rounded-4 p-4 shadow-sm mb-4">
-              <h5 className="fw-bold mb-4">Bài học tiếp theo</h5>
-              {nextLessons.map((lesson, index) => (
-                <div key={index} className="mb-4">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h6 className="fw-bold mb-0">{lesson.title}</h6>
-                    <span className="badge bg-light text-dark">{lesson.level}</span>
-                  </div>
-                  <div className="text-muted small mb-2">
-                    <i className="bi bi-clock me-2"></i>
-                    {lesson.duration}
-                  </div>
-                  <div className="progress" style={{ height: '5px' }}>
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${lesson.progress}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
+              {/* Question List */}
+              <ul className="list-group">
+                {questions.map((question, index) => {
+                  const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+                  const isCorrect = userAnswer?.answerText === question.correctAnswer;
+                  return (
+                    <li key={question.questionId} className="list-group-item">
+                      <div>
+                        <strong>Câu {index + 1}:</strong> {question.content}
+                      </div>
+                      <div className="d-flex flex-column mt-2">
+                        <span
+                          className={`badge rounded-pill ${isCorrect ? "bg-success" : "bg-danger"}`}
+                          style={{ fontSize: "16px", fontWeight: "bold" }}
+                        >
+                          Bạn chọn: {userAnswer?.answerText || "Không chọn"}
+                        </span>
+                        <span
+                          className="badge bg-info rounded-pill mt-2"
+                          style={{ fontSize: "16px", fontWeight: "bold" }}
+                        >
+                          Đáp án đúng: {question.correctAnswer || "Không có"}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
 
-            <div className="bg-white rounded-4 p-4 shadow-sm">
-              <h5 className="fw-bold mb-3">Thống kê học tập</h5>
-              <div className="mb-3">
-                <div className="text-muted small mb-1">Độ chính xác</div>
-                <div className="progress mb-2" style={{ height: '5px' }}>
-                  <div className="progress-bar bg-success" style={{ width: '80%' }}></div>
-                </div>
-                <div className="small text-end">80%</div>
-              </div>
-              <div>
-                <div className="text-muted small mb-1">Hoàn thành mục tiêu</div>
-                <div className="progress mb-2" style={{ height: '5px' }}>
-                  <div className="progress-bar bg-primary" style={{ width: '60%' }}></div>
-                </div>
-                <div className="small text-end">60%</div>
+              {/* Action Buttons */}
+              <div className="d-flex justify-content-between w-100 gap-3 mt-4">
+                <button
+                  className="btn btn-primary flex-grow-1 py-3"
+                  style={{ borderRadius: '30px' }}
+                  onClick={() => navigate(`/private/learn/lesson/${lessonId}`)} // Navigate to current lesson
+                >
+                  Học lại
+                </button>
+                <button
+                  className="btn btn-success flex-grow-1 py-3"
+                  style={{ borderRadius: '30px' }}
+                  onClick={() => navigate(`/private/learn/lesson/${parseInt(lessonId, 10) + 1}`)} // Navigate to next lesson
+                >
+                  Tiếp tục
+                </button>
               </div>
             </div>
           </div>

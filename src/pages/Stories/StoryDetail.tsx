@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getBookById } from '../../services/bookService';
 import { BookResponse } from '../../interfaces/responses/BookResponse';
-import './StoryDetail.css';
 
 const WORD_LIMIT = 500;
 
@@ -16,7 +15,9 @@ const StoryDetail: React.FC = () => {
   const [pages, setPages] = useState<string[][]>([]);
 
   useEffect(() => {
+    console.log('Story ID:', storyId); // Kiểm tra giá trị storyId
     const fetchStoryDetail = async () => {
+      // Kiểm tra xem storyId có hợp lệ không
       if (!storyId || isNaN(parseInt(storyId))) {
         setError('Invalid story ID');
         setLoading(false);
@@ -26,7 +27,15 @@ const StoryDetail: React.FC = () => {
       try {
         // Fetch book details from API
         const response = await getBookById(parseInt(storyId));
-        setStory(response.data);
+
+        // Kiểm tra xem phản hồi có tồn tại dữ liệu hay không
+        if (!response || !response.title || !response.author) {
+          setError('Story not found');
+          setLoading(false);
+          return;
+        }
+
+        setStory(response);  // Dữ liệu trả về có thể không chứa .data, chỉ cần sử dụng trực tiếp response
 
         // Fetch story content from file
         const contentResponse = await fetch(`/content/book${storyId}.txt`);
@@ -43,7 +52,7 @@ const StoryDetail: React.FC = () => {
             if (!acc[pageIndex]) acc[pageIndex] = [];
             acc[pageIndex].push(word);
             return acc;
-          }, [])
+          }, []),
         );
       } catch (err: any) {
         console.error('Fetch error:', err);
@@ -69,32 +78,44 @@ const StoryDetail: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className="text-center text-danger">{error}</div>;
   }
 
   if (!story) {
-    return <div className="not-found">Story not found</div>;
+    return <div className="text-center">Story not found</div>;
   }
 
   return (
-    <div className="story-detail">
-      <h1>{story.title}</h1>
-      <h2>Author: {story.author}</h2>
+    <div className="container my-5">
+      <h1 className="text-center mb-4">{story.title}</h1>
+      <h2 className="text-center text-muted mb-4">Author: {story.author}</h2>
 
-      <div className="story-content">
-        <div className="content-text">{pages[currentPage]?.join(' ') || 'No content available.'}</div>
+      <div className="card p-3">
+        <div className="card-body">
+          <div className="story-content">
+            <div className="content-text">{pages[currentPage]?.join(' ') || 'No content available.'}</div>
+          </div>
+        </div>
       </div>
 
-      <div className="pagination-controls">
-        <button onClick={handlePreviousPage} disabled={currentPage === 0}>
+      <div className="d-flex justify-content-between align-items-center my-3">
+        <button
+          className="btn btn-primary"
+          onClick={handlePreviousPage}
+          disabled={currentPage === 0}
+        >
           Previous
         </button>
-        <span className="page-info">{`Page ${currentPage + 1} of ${pages.length}`}</span>
-        <button onClick={handleNextPage} disabled={currentPage === pages.length - 1}>
+        <span className="text-muted">{`Page ${currentPage + 1} of ${pages.length}`}</span>
+        <button
+          className="btn btn-primary"
+          onClick={handleNextPage}
+          disabled={currentPage === pages.length - 1}
+        >
           Next
         </button>
       </div>

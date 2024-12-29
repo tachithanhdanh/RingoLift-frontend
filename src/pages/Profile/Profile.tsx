@@ -93,7 +93,7 @@ function Profile() {
                 </div>
                 <hr className="my-4" />
                 <h5 className="fw-bold mb-4">Daily Progress</h5>
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="fw-medium">Time Spent</span>
                     <span className="text-muted small">{dailyProgress.timeSpent} / {goal.timeSpent}</span>
@@ -108,7 +108,7 @@ function Profile() {
                       aria-valuemax={100}
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="mb-4">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="fw-medium">Lesson Count</span>
@@ -125,7 +125,7 @@ function Profile() {
                     />
                   </div>
                 </div>
-                <div>
+                {/* <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="fw-medium">Word Count</span>
                     <span className="text-muted small">{dailyProgress.wordCount} / {goal.wordCount}</span>
@@ -140,7 +140,7 @@ function Profile() {
                       aria-valuemax={100}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -179,9 +179,9 @@ function Profile() {
                         <span className="badge bg-danger text-white rounded-pill me-3 px-3 py-2">
                           Incorrect: {lesson.incorrectCount}
                         </span>
-                        <span className="badge bg-secondary text-white rounded-pill px-3 py-2">
+                        {/* <span className="badge bg-secondary text-white rounded-pill px-3 py-2">
                           {lesson.timeSpent} mins
-                        </span>
+                        </span> */}
                       </div>
                     </li>
                   ))}

@@ -49,7 +49,7 @@ const PrivateRoutes = () => {
         path="learn/quiz-multiple-choice/:quizId"
         element={<QuizMultipleChoice />}
       />
-      <Route path="learn/quiz-result/:quizId" element={<QuizResult />} />
+      <Route path="learn/quiz-result/:lessonId" element={<QuizResult />} />
       <Route path="vocabulary/:topicId" element={<TopicDetail />} />
       <Route path="stories" element={<StoryList />} />
       <Route path="story/:storyId" element={<StoryDetail />} />

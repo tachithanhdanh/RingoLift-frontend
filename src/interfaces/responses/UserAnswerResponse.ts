@@ -6,6 +6,4 @@ export interface UserAnswerResponse extends BaseResponse {
   userId: number;
   questionId: number;
   answerText: string;
-  createdAt: string;
-  updatedAt: string;
 }
