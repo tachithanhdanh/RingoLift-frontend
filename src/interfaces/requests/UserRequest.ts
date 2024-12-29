@@ -7,7 +7,7 @@ export interface UserRequest {
   genderId?: number;
   picture?: string;
   goalId?: number;
-  password: string;
+  password?: string;
   isPublic?: boolean;
   googleId?: string;
   accessToken?: string;

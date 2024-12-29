@@ -1,6 +1,6 @@
 // App.tsx
 
-import "./index.css";
+import './index.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminRoutes from "./routes/AdminRoutes";
 import PrivateRoutes from "./routes/PrivateRoutes";

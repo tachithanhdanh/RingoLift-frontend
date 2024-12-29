@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { AxiosResponse } from "axios";
-import { toCamelCase } from "../utils/caseConverter";
 import { useAuth } from "../hooks/useAuth";
 
 const AxiosInterceptorProvider = ({
@@ -17,10 +16,10 @@ const AxiosInterceptorProvider = ({
   React.useEffect(() => {
     const interceptor = api.interceptors.response.use(
       (response): AxiosResponse => {
-        if (response.data) {
-          // Chuyển data từ snake_case sang camelCase
-          response.data = toCamelCase(response.data);
-        }
+        // if (response.data) {
+        //   // Chuyển data từ snake_case sang camelCase
+        //   response.data = toCamelCase(response.data);
+        // }
         return response;
       },
       (error) => {

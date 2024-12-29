@@ -2,8 +2,8 @@ import api from "./api";
 import { UserRequest } from "../interfaces/requests/UserRequest";
 import { UserResponse } from "../interfaces/responses/UserResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
-import { handleApiError } from "../utils/errorHandler";
 import { UserGenderResponse } from "../interfaces/responses/UserGenderResponse";
+import { LessonProgressResponse } from "../interfaces/responses/LessonProgressResponse";
 
 // Tạo mới người dùng
 export const createUser = async (
@@ -16,7 +16,7 @@ export const createUser = async (
     );
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -26,7 +26,7 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
     const response = await api.get<ResponseObject<UserResponse[]>>("/users");
     return response.data.data; // Trả về data kiểu UserResponse[]
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -36,10 +36,9 @@ export const getUserById = async (id: number): Promise<UserResponse> => {
     const response = await api.get<ResponseObject<UserResponse>>(
       `/users/${id}`
     );
-    console.log(response);
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -55,7 +54,7 @@ export const updateUser = async (
     );
     return response.data.data; // Trả về data kiểu UserResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -64,7 +63,7 @@ export const deleteUser = async (id: number): Promise<void> => {
   try {
     await api.delete<ResponseObject<void>>(`/users/${id}`);
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -76,7 +75,7 @@ export const getAllGenders = async (): Promise<UserGenderResponse[]> => {
     );
     return response.data.data; // Trả về data kiểu UserGenderResponse[]
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
 
@@ -90,6 +89,20 @@ export const getUserGenderById = async (
     );
     return response.data.data; // Trả về data kiểu UserGenderResponse
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw error;
   }
 };
+
+// Get lesson progress by user id
+export const getLessonProgressByUserId = async (
+  userId: number
+): Promise<LessonProgressResponse[]> => {
+  try {
+    const response = await api.get<ResponseObject<LessonProgressResponse[]>>(
+      `users/${userId}/progress/lesson`
+    );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+}

@@ -10,6 +10,8 @@ export const createUserAnswer = async (
   userAnswerRequest: UserAnswerRequest
 ): Promise<UserAnswerResponse> => {
   try {
+    console.log('userAnswerRequest: ', userAnswerRequest);
+
     const response = await api.post<ResponseObject<UserAnswerResponse>>(
       "/user-answers",
       userAnswerRequest
@@ -21,14 +23,30 @@ export const createUserAnswer = async (
 };
 
 // Update an existing UserAnswer by ID
-export const updateUserAnswer = async (
-  id: number,
+export const updateUserAnswerByUserIdAndQuestionId = async (
+  userId: number,
+  questionId: number,
   userAnswerRequest: UserAnswerRequest
 ): Promise<UserAnswerResponse> => {
   try {
     const response = await api.put<ResponseObject<UserAnswerResponse>>(
-      `/user-answers/${id}`,
+      `/user-answers?user_id=${userId}&question_id=${questionId}`,
       userAnswerRequest
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+// get UserAnswer By UserId And QuestionId
+export const getUserAnswerByUserIdAndQuestionId = async (
+  userId: number,
+  questionId: number
+): Promise<UserAnswerResponse> => {
+  try {
+    const response = await api.get<ResponseObject<UserAnswerResponse>>(
+      `/user-answers?user_id=${userId}&question_id=${questionId}`,
     );
     return response.data.data;
   } catch (error) {

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Alert, Spinner, ListGroup } from "react-bootstrap";
 import { getAnswersByQuestionId } from "../../services/answerService";
-import { createUserAnswer, checkUserAnswer } from "../../services/userAnswerService";
+import { updateUserAnswerByUserIdAndQuestionId, checkUserAnswer } from "../../services/userAnswerService";
 import { QuestionResponse } from "../../interfaces/responses/QuestionResponse";
 import { AnswerResponse } from "../../interfaces/responses/AnswerResponse";
 import { UserAnswerRequest } from "../../interfaces/requests/UserAnswerRequest";
+import { useAuth } from "../../hooks/useAuth";
+import { User } from "../../interfaces/models/User";
+import { getUserById } from "../../services/userService";
 
 interface QuestionCardProps {
   question: QuestionResponse;
@@ -17,6 +20,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNavigation }) =
   const [submissionResult, setSubmissionResult] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth(); // Get the authenticated user from context
+  const [profile, setProfile] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchAnswers = async () => {
@@ -34,6 +39,25 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNavigation }) =
     fetchAnswers();
   }, [question]);
 
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user) {
+        try {
+          const fetchedProfile = await getUserById(user.id); // Fetch user profile data
+          setProfile(fetchedProfile);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
+    }
+
+    fetchProfile();
+  }, [user]);
+
+  useEffect(() => {
+    setSubmissionResult(null);
+  }, [question]);
+
   const handleAnswerSelect = (answerId: number) => {
     setSelectedAnswer(answerId);
   };
@@ -44,13 +68,23 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNavigation }) =
       return;
     }
 
+    if (profile == null) {
+      return (
+        <Alert variant="danger" className="text-center">
+          Profile is null
+        </Alert>
+      );
+    }
+
     try {
       const userAnswerRequest: UserAnswerRequest = {
-        userId: 1, // Replace with actual user ID
-        questionId: question.id,
+        // userId: profile.id, // Replace with actual user ID
+        // questionId: question.id,
         answerText: answers.find((a) => a.id === selectedAnswer)?.content || "",
       };
-      const createdUserAnswer = await createUserAnswer(userAnswerRequest);
+      const userId = profile.id;
+      const questionId = question.id;
+      const createdUserAnswer = await updateUserAnswerByUserIdAndQuestionId(userId, questionId, userAnswerRequest);
       const isCorrect = await checkUserAnswer(createdUserAnswer.id);
       setSubmissionResult(isCorrect ? "Correct answer!" : "Incorrect answer.");
     } catch (err) {
@@ -77,6 +111,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNavigation }) =
       </Alert>
     );
   }
+
+  console.log('submissionResult: ', submissionResult);
 
   return (
     <Card className="text-center my-4">

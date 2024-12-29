@@ -24,12 +24,17 @@ const QuizPage: React.FC = () => {
         const lessonQuestions: LessonQuestionResponse[] = 
           await getQuestionsByLessonId(id);
 
+        // console.log(lessonQuestions);
+
         // Fetch each question by its ID
         const fetchedQuestions = await Promise.all(
           lessonQuestions
-            .filter((lq) => lq.question_id !== undefined && lq.question_id !== null)
-            .map((lessonQuestion) => getQuestionById(lessonQuestion.question_id))
+            .filter((lq) => lq.questionId !== undefined && lq.questionId !== null)
+            .map((lessonQuestion) => getQuestionById(lessonQuestion.questionId))
         );
+
+        // const result = await getQuestionById(1);
+        // console.log(result);
 
         setQuestions(fetchedQuestions);
       } catch (err) {

@@ -1,0 +1,78 @@
+.mistakes {
+    padding-top: 80px !important;
+    padding-bottom: 30px;
+}
+    
+.mistake-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mistake-table th, .mistake-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.mistake-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.mistake-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.mistake-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.incorrect-answer {
+    color: red; /* Color for "Incorrect Answer" column */
+}
+
+.btn-reviewed {
+    background-color: #a5d8a5;
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-not-reviewed {
+    background-color: #f8d7da;
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-reviewed:hover, .btn-not-reviewed:hover {
+    opacity: 0.8;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #0056b3;
+}
+
+.pagination button:hover {
+    opacity: 0.8;
+}

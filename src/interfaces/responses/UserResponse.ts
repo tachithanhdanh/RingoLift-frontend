@@ -8,9 +8,10 @@ export interface UserResponse extends BaseResponse {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string; // ISO 8601 string
-  genderType?: string;
+  gender?: string;
   picture?: string;
   goal?: GoalResponse;
+  // password?: string;
   isPublic?: boolean;
   googleId?: string;
   accessToken?: string;
