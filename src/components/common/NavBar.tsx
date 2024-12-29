@@ -4,8 +4,8 @@ import {
   Nav,
   Container,
   Button,
-  Form,
-  FormControl,
+  // Form,
+  // FormControl,
   Dropdown,
 } from "react-bootstrap";
 import {
@@ -51,7 +51,7 @@ const NavBar: React.FC = () => {
         </Navbar.Brand>
 
         {/* Search Form */}
-        <Form className="d-flex ms-3">
+        {/* <Form className="d-flex ms-3">
           <FormControl
             type="search"
             placeholder="Search..."
@@ -59,7 +59,7 @@ const NavBar: React.FC = () => {
             aria-label="Search"
             style={{ borderRadius: "8px", padding: "5px 10px" }}
           />
-        </Form>
+        </Form> */}
 
         {/* Nav Links */}
         <Nav className="ms-auto d-flex align-items-center">

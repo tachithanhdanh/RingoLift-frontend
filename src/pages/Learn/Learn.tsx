@@ -1,3 +1,4 @@
+import "./Learn.css";
 import React, { useEffect, useState } from "react";
 import { getAllChapters } from "../../services/chapterService";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,7 +25,7 @@ export default function Learn() {
   }, []);
 
   return (
-    <Container className="my-5">
+    <Container className="my-5 lean-pad">
       <h1 className="text-center">List of Chapters</h1>
       <Row className="mt-4">
         {chapters.map((chapter, index) => (

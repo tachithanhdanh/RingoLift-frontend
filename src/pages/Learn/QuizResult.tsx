@@ -114,8 +114,8 @@ function QuizResult() {
 
   return (
     <div className="min-vh-100 bg-light">
-      <NavBar />
-      <div className="navbar-padding container">
+      // <NavBar />
+      <div className="quiz-result-pad container">
         <div className="row">
           {/* Main Content */}
           <div className="col-md-8 offset-md-2">

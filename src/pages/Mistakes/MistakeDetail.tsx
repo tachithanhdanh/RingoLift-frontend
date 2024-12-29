@@ -1,3 +1,4 @@
+import "./MistakeDetail.css"
 import React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -72,7 +73,7 @@ const MistakeDetail: React.FC = () => {
     const formattedDate = date ? new Date(date).toLocaleDateString() : 'Invalid Date';
 
     return (
-        <div className="navbar-padding">
+        <div className="mistake-detail">
         <Container>
             <Title>Detail for Mistake ID: {mistakeId}</Title>
             <Question>Question: {question}</Question>

@@ -178,7 +178,7 @@ function Mistake() {
     }
 
     return (
-        <div className="container navbar-padding">
+        <div className="container mistakes">
             <h1>List of Wrong Answers</h1>
             {mistakes.length === 0 ? (
                 <p>No mistakes found.</p>

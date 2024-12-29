@@ -1,6 +1,6 @@
 /* Scope tất cả CSS vào class root */
 .edit-profile {
-  padding-top: 100px !important; /* Bù chiều cao NavBar */
+  padding-top: 60px !important; /* Bù chiều cao NavBar */
   margin-top: 0 !important; /* Đảm bảo không bị margin */
   font-family: Arial, sans-serif !important; /* Override font */
   line-height: 1.5 !important;

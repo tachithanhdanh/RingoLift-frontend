@@ -74,7 +74,7 @@ function Profile() {
 
   return (
     <div className="min-vh-100 bg-light">
-      <NavBar />
+      // <NavBar />
       <div className="friend-profile container">
         <div className="row g-4 justify-content-center">
           {/* Left Column: Avatar + Achievements */}

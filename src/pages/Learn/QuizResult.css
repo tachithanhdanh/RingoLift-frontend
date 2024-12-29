@@ -1,34 +1,3 @@
-.navbar-padding {
-  padding-top: 100px !important; /* Bù chiều cao NavBar */
-  padding-bottom: 30px;
-}
-
-.quiz-result {
-  font-family: Arial, sans-serif;
-  color: #212529;
-}
-
-.text-orange {
-  color: #ff5722;
-}
-
-.btn-orange {
-  background-color: #ff5722;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.375rem;
-  transition: all 0.3s ease;
-}
-
-.btn-orange:hover {
-  background-color: #e64a19;
-}
-
-.stars .bi-star-fill {
-  font-size: 1.5rem;
-}
-
-.stars .bi-star {
-  font-size: 1.5rem;
+.quiz-result-pad {
+    padding-top: 60px !important;
 }

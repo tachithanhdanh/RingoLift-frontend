@@ -289,7 +289,7 @@ function EditProfile() {
 
   return (
     <div className="min-vh-100 bg-light">
-      <NavBar />
+      // <NavBar />
       <div className="edit-profile container">
         <div className="row g-4 justify-content-center">
           {/* Left Column: Avatar + Achievements */}

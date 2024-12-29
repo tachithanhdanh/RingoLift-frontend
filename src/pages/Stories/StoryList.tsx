@@ -1,3 +1,4 @@
+import "./StoryList.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import StoryCard from "../../components/stories/StoryCard";
@@ -64,70 +65,56 @@ const StoryList: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleClick = (id: string) => {
-    // Navigate to the story detail page with the story ID
-    navigate(`/private/story/${id}`);
+  const handleClick = (id: string, contentUrl: string) => {
+    // Navigate to the story detail page with the story ID and content URL
+    navigate(`/private/story/${id}`, { state: { contentUrl } });
   };
 
   return (
-    <div className="container">
-      <NavBar />
-      <style>{`
-        .container {
-          padding: 20px;
-        }
-        .pagination {
-          margin-top: 20px;
-          text-align: center;
-        }
-        .pagination .btn {
-          margin: 0 5px;
-        }
-        .form-control {
-          margin-bottom: 20px;
-        }
-      `}</style>
-
-      <h1>Stories</h1>
-      <h2>List of stories</h2>
-      <input
-        type="text"
-        placeholder="Search stories..."
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="form-control mb-3"
-      />
-      <div className="row">
-        {currentStories.map((story) => (
-          <div className="col-md-4" key={story.id}>
-            <StoryCard
-              title={story.title}
-              author={story.author}
-              genre={getGenreName(story.genreId)}
-              publishedDate={story.publishedDate}
-              description={story.description}
-              createdAt={story.createdAt}
-              updatedAt={story.updatedAt}
-              onClick={() => handleClick(story.id.toString())}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={`btn btn-outline-primary ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+    <div className="min-vh-100 bg-light">
+      // <NavBar />
+      <div className="container">
+        <h1>Stories</h1>
+        <h2>List of stories</h2>
+        <input
+          type="text"
+          placeholder="Search stories..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="form-control mb-3"
+        />
+        <div className="row">
+          {currentStories.map((story) => (
+            <div className="col-md-4" key={story.id}>
+              <StoryCard
+                title={story.title}
+                author={story.author}
+                genre={getGenreName(story.genreId)}
+                publishedDate={story.publishedDate}
+                description={story.description}
+                createdAt={story.createdAt}
+                updatedAt={story.updatedAt}
+                onClick={() => handleClick(story.id.toString(), story.contentUrl)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={`btn btn-outline-primary ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
