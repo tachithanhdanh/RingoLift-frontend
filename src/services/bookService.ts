@@ -72,26 +72,3 @@ export const deleteBook = async (id: number): Promise<void> => {
     throw new Error(handleApiError(error));
   }
 };
-
-// Read book content by content_url
-export const readBookContent = async (contentUrl: string): Promise<BookContentResponse> => {
-  try {
-    // Remove any potential special characters and ensure proper URL formatting
-    const sanitizedUrl = encodeURIComponent(contentUrl.trim());
-
-    // Call the API endpoint to get the book content
-    const response = await api.get<ResponseObject<BookContentResponse>>(
-      `/books/content/${sanitizedUrl}`
-    );
-
-    // Check if the response contains the expected data
-    if (response?.data?.data) {
-      return response.data.data;
-    }
-
-    throw new Error("Book content not found");
-  } catch (error) {
-    console.error('Read content error:', error);
-    throw new Error(handleApiError(error));
-  }
-};
