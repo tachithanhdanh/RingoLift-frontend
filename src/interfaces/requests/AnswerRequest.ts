@@ -4,4 +4,3 @@ export interface AnswerRequest {
   content: string;
   isCorrect: boolean;
 }
-  

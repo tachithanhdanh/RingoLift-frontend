@@ -1,7 +1,8 @@
-import api from "./api"; // Ensure proper import of api
+// questionService.ts
+import api from "./api";
 import { QuestionRequest } from "../interfaces/requests/QuestionRequest";
-import { QuestionTypeRequest } from "../interfaces/requests/QuestionTypeRequest";
 import { QuestionResponse } from "../interfaces/responses/QuestionResponse";
+import { QuestionTypeRequest } from "../interfaces/requests/QuestionTypeRequest";
 import { QuestionTypeResponse } from "../interfaces/responses/QuestionTypeResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
 import { handleApiError } from "../utils/errorHandler";
@@ -47,8 +48,8 @@ export const getQuestionById = async (
   }
 };
 
-// Get questions by type
-export const getQuestionsByType = async (
+// Get questions by type ID
+export const getQuestionsByTypeId = async (
   typeId: number
 ): Promise<QuestionResponse[]> => {
   try {
@@ -102,9 +103,13 @@ export const createQuestionType = async (
 };
 
 // Get all question types
-export const getAllQuestionTypes = async (): Promise<QuestionTypeResponse[]> => {
+export const getAllQuestionTypes = async (): Promise<
+  QuestionTypeResponse[]
+> => {
   try {
-    const response = await api.get<ResponseObject<QuestionTypeResponse[]>>("/questions/types");
+    const response = await api.get<ResponseObject<QuestionTypeResponse[]>>(
+      "/questions/types"
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(handleApiError(error));
@@ -153,9 +158,9 @@ export const deleteQuestionType = async (typeId: number): Promise<void> => {
 // Get lessons by question ID
 export const getLessonsByQuestionId = async (
   questionId: number
-): Promise<any> => {
+): Promise<any[]> => {
   try {
-    const response = await api.get<ResponseObject<any>>(
+    const response = await api.get<ResponseObject<any[]>>(
       `/questions/${questionId}/lessons`
     );
     return response.data.data;
@@ -164,7 +169,7 @@ export const getLessonsByQuestionId = async (
   }
 };
 
-// Remove all lessons from a question
+// Remove all lessons from question
 export const removeAllLessonsFromQuestion = async (
   questionId: number
 ): Promise<void> => {
