@@ -61,9 +61,9 @@ const StoryList: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleClick = (id: string) => {
-    // Navigate to the story detail page with the story ID
-    navigate(`/private/story/${id}`);
+  const handleClick = (id: string, contentUrl: string) => {
+    // Navigate to the story detail page with the story ID and content URL
+    navigate(`/private/story/${id}`, { state: { contentUrl } });
   };
 
   return (
@@ -108,7 +108,7 @@ const StoryList: React.FC = () => {
               description={story.description}
               createdAt={story.createdAt}
               updatedAt={story.updatedAt}
-              onClick={() => handleClick(story.id.toString())}
+              onClick={() => handleClick(story.id.toString(), story.contentUrl)}
             />
           </div>
         ))}
