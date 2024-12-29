@@ -1,3 +1,4 @@
+import { BookGenre } from "../models/BookGenre";
 import { BaseResponse } from "./BaseResponse";
 
 export interface BookGenreResponse extends BaseResponse {

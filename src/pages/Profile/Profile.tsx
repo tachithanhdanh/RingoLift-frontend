@@ -68,9 +68,9 @@ function Profile() {
     return total ? Math.round((value / total) * 100) : 0;
   };
 
-  const timeSpentPercentage = calculatePercentage(dailyProgress.timeSpent, goal.timeSpent);
+  // const timeSpentPercentage = calculatePercentage(dailyProgress.timeSpent, goal.timeSpent);
   const lessonCountPercentage = calculatePercentage(dailyProgress.lessonCount, goal.lessonCount);
-  const wordCountPercentage = calculatePercentage(dailyProgress.wordCount, goal.wordCount);
+  // const wordCountPercentage = calculatePercentage(dailyProgress.wordCount, goal.wordCount);
 
   return (
     <div className="min-vh-100 bg-light">

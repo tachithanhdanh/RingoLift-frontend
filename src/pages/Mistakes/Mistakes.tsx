@@ -1,27 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import "./Mistakes.css";
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllMistakes, updateMistake } from '../../services/mistakeService';
 import { getAnswersByQuestionId } from '../../services/answerService';
 import { getQuestionById } from '../../services/questionService';
 import { getLessonById } from '../../services/lessonService';
-import { MistakeResponse } from '../../interfaces/responses/MistakeResponses';
+import { MistakeResponse } from '../../interfaces/responses/MistakeResponse';
 import { AnswerResponse } from '../../interfaces/responses/AnswerResponse';
 import { QuestionResponse } from '../../interfaces/responses/QuestionResponse';
 import { LessonResponse } from '../../interfaces/responses/LessonResponse';
+import { useAuth } from "../../hooks/useAuth";
+import { User } from "../../interfaces/models/User";
+import { getUserById } from "../../services/userService";
 
-const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
+function Mistake() {
     const navigate = useNavigate();
     const [mistakes, setMistakes] = useState<MistakeResponse[]>([]);
-    const [correctAnswers, setCorrectAnswers] = useState<Record<number, AnswerResponse[]>>({});
+    // const [correctAnswers, setCorrectAnswers] = useState<Record<number, AnswerResponse[]>>({});
     const [questions, setQuestions] = useState<Record<number, QuestionResponse>>({});
     const [lessons, setLessons] = useState<Record<number, LessonResponse>>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const { user } = useAuth();
+    const [profile, setProfile] = useState<User | null>(null);
+
     const mistakesPerPage = 8;
 
     useEffect(() => {
+        async function fetchProfile() {
+          if (user) {
+            try {
+              const fetchedProfile = await getUserById(user.id); // Fetch user profile data
+              setProfile(fetchedProfile);
+            } catch (error) {
+              console.error("Failed to fetch user profile:", error);
+            }
+          }
+        }
+    
+        fetchProfile();
+      }, [user]);
+
+    useEffect(() => {
         const fetchMistakes = async () => {
+            if (profile == null) return;
+
             try {
                 const response = await getAllMistakes();
                 console.log('API Response:', response.data);
@@ -29,7 +53,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                     throw new Error('Expected mistakesData to be an array');
                 }
 
-                const userMistakes = response.data.filter(mistake => String(mistake.user_id) === String(userId));
+                const userMistakes = response.data.filter(mistake => String(mistake.userId) === String(profile.id));
                 setMistakes(userMistakes);
 
                 const validMistakes = userMistakes.filter(mistake =>
@@ -59,13 +83,13 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                     Promise.all(lessonsPromises.map(p => p.catch(error => ({ error })))),
                 ]);
 
-                const answersMap = validMistakes.reduce<Record<number, AnswerResponse[]>>((acc, mistake, index) => {
-                    const result = answersResults[index];
-                    if (!result.error && Array.isArray(result)) {
-                        acc[mistake.questionId] = result;
-                    }
-                    return acc;
-                }, {});
+                // const answersMap = validMistakes.reduce<Record<number, AnswerResponse[]>>((acc, mistake, index) => {
+                //     const result = answersResults[index];
+                //     if (!result.error && Array.isArray(result)) {
+                //         acc[mistake.questionId] = result;
+                //     }
+                //     return acc;
+                // }, {});
 
                 const questionsMap = validMistakes.reduce<Record<number, QuestionResponse>>((acc, mistake, index) => {
                     const result = questionsResults[index];
@@ -83,7 +107,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                     return acc;
                 }, {});
 
-                setCorrectAnswers(answersMap);
+                // setCorrectAnswers(answersMap);
                 setQuestions(questionsMap);
                 setLessons(lessonsMap);
                 setLoading(false);
@@ -94,7 +118,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
         };
 
         fetchMistakes();
-    }, [userId]);
+    }, [profile]);
 
     const handleReviewToggle = async (mistake: MistakeResponse) => {
         console.log('Before update:', mistake);
@@ -102,7 +126,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
             try {
                 const updatedMistake = await updateMistake(mistake.id, {
                     ...mistake,
-                    is_active: true,
+                    active: true,
                 });
                 setMistakes(prev => prev.map(m => (m.id === mistake.id ? { ...m, active: true } : m)));
                 console.log('Updated Mistake:', updatedMistake);
@@ -121,15 +145,15 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
             return;
         }
 
-        const correctAnswerList = correctAnswers[mistake.questionId]
-            ?.map(ans => ans.content)
-            .join(', ') || 'No correct answers found';
+        // const correctAnswerList = correctAnswers[mistake.questionId]
+        //     ?.map(ans => ans.content)
+        //     .join(', ') || 'No correct answers found';
 
         navigate(`/private/mistakes/${mistake.id}`, {
             state: {
                 question: question.content,
                 yourAnswer: mistake.yourAnswer,
-                correctAnswer: correctAnswerList,
+                correctAnswer: question.correctAnswer,
                 explanation: question.hint,
                 date: mistake.updatedAt,
             },
@@ -154,7 +178,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
     }
 
     return (
-        <div className="container">
+        <div className="container navbar-padding">
             <h1>List of Wrong Answers</h1>
             {mistakes.length === 0 ? (
                 <p>No mistakes found.</p>
@@ -177,10 +201,11 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                             {currentMistakes.map((mistake) => {
                                 const questionContent = questions[mistake.questionId]?.content || 'Question not found';
                                 const lesson = lessons[mistake.lessonId];
-                                const correctAnswerList = correctAnswers[mistake.questionId]
-                                    ?.map(ans => ans.content)
-                                    .join(', ') || 'No correct answers found';
+                                // const correctAnswerList = correctAnswers[mistake.questionId]
+                                //     ?.map(ans => ans.content)
+                                //     .join(', ') || 'No correct answers found';
                                 const dateTaken = mistake.updatedAt ? new Date(mistake.updatedAt).toLocaleDateString() : 'Invalid Date';
+                                const correctAnswer = questions[mistake.questionId].correctAnswer;
 
                                 return (
                                     <tr key={mistake.id}>
@@ -189,7 +214,7 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                                         <td>{lesson?.chapterName || 'N/A'}</td>
                                         <td>{lesson?.title || 'N/A'}</td>
                                         <td className="incorrect-answer">{mistake.yourAnswer || 'N/A'}</td>
-                                        <td>{correctAnswerList}</td>
+                                        <td>{correctAnswer}</td>
                                         <td>{dateTaken}</td>
                                         <td>
                                             <button
@@ -218,83 +243,6 @@ const Mistake: React.FC<{ userId: number }> = ({ userId }) => {
                     </div>
                 </>
             )}
-            <style>
-                {`
-                .mistake-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-
-                .mistake-table th, .mistake-table td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                }
-
-                .mistake-table th {
-                    background-color: #f2f2f2;
-                    font-weight: bold;
-                }
-
-                .mistake-table tr:nth-child(even) {
-                    background-color: #f9f9f9;
-                }
-
-                .mistake-table tr:hover {
-                    background-color: #f1f1f1;
-                }
-
-                .incorrect-answer {
-                    color: red; /* Color for "Incorrect Answer" column */
-                }
-
-                .btn-reviewed {
-                    background-color: #a5d8a5;
-                    color: #000;
-                    border: none;
-                    padding: 10px 15px;
-                    cursor: pointer;
-                    border-radius: 5px;
-                }
-
-                .btn-not-reviewed {
-                    background-color: #f8d7da;
-                    color: #000;
-                    border: none;
-                    padding: 10px 15px;
-                    cursor: pointer;
-                    border-radius: 5px;
-                }
-
-                .btn-reviewed:hover, .btn-not-reviewed:hover {
-                    opacity: 0.8;
-                }
-
-                .pagination {
-                    margin-top: 20px;
-                    display: flex;
-                    justify-content: center;
-                }
-
-                .pagination button {
-                    margin: 0 5px;
-                    padding: 10px 15px;
-                    border: none;
-                    border-radius: 5px;
-                    background-color: #007bff;
-                    color: white;
-                    cursor: pointer;
-                }
-
-                .pagination button.active {
-                    background-color: #0056b3;
-                }
-
-                .pagination button:hover {
-                    opacity: 0.8;
-                }
-                `}
-            </style>
         </div>
     );
 };

@@ -72,6 +72,7 @@ const MistakeDetail: React.FC = () => {
     const formattedDate = date ? new Date(date).toLocaleDateString() : 'Invalid Date';
 
     return (
+        <div className="navbar-padding">
         <Container>
             <Title>Detail for Mistake ID: {mistakeId}</Title>
             <Question>Question: {question}</Question>
@@ -83,6 +84,7 @@ const MistakeDetail: React.FC = () => {
             <DateCreated>Created date: {formattedDate}</DateCreated>
             <BackButton onClick={() => window.history.back()}>Back</BackButton>
         </Container>
+        </div>
     );
 };
 

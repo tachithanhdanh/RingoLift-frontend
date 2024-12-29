@@ -104,6 +104,7 @@ function QuizResult() {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (lessonId == undefined) return <div>Error: Lesson not found</div>;
 
   // Calculate total correct answers
   const correctAnswers = questions.reduce((count, question) => {

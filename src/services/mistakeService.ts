@@ -1,6 +1,6 @@
 import api from "./api";
-import { MistakeRequest } from "../interfaces/requests/MistakeRequests";
-import { MistakeResponse } from "../interfaces/responses/MistakeResponses";
+import { MistakeRequest } from "../interfaces/requests/MistakeRequest";
+import { MistakeResponse } from "../interfaces/responses/MistakeResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
 import { handleApiError } from "../utils/errorHandler";
 
@@ -18,7 +18,9 @@ export const createMistake = async (request: MistakeRequest): Promise<ResponseOb
 // Update an existing mistake
 export const updateMistake = async (id: number, request: MistakeRequest): Promise<ResponseObject<MistakeResponse>> => {
     try {
+        console.log('request: ', request);
         const response = await api.put(`/mistakes/${id}`, request);
+        console.log(response);
         return response.data;
     } catch (error) {
         console.error('Error updating mistake:', error);
