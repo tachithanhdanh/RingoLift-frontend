@@ -1,3 +1,4 @@
+import "./StoryDetail.css";
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { getBookById, readBookContent } from '../../services/bookService';
@@ -93,7 +94,7 @@ const StoryDetail: React.FC = () => {
   }
 
   return (
-    <div className="story-list">
+    <div className="story-detail">
       <div className="container mx-auto p-4 bg-light rounded shadow">
         <h1 className="text-center mb-4 text-primary">{story.title}</h1>
         <h2 className="text-center mb-4 text-secondary">Author: {story.author}</h2>

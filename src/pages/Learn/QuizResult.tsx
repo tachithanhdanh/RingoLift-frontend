@@ -47,11 +47,7 @@ function QuizResult() {
   // console.log(profile);
 
   useEffect(() => {
-    console.log('lessonId: ', lessonId);
-
     if (!lessonId) return;
-
-    console.log('lessonId: ', lessonId);
 
     const fetchQuizData = async () => {
       setLoading(true);

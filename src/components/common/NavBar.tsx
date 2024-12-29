@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   Nav,
@@ -11,22 +11,40 @@ import {
 import {
   FiBell,
   FiLogOut,
-  FiMessageSquare,
-  FiSettings,
+  // FiMessageSquare,
+  // FiSettings,
   FiTrendingUp,
   FiUser,
-  FiUsers,
+  // FiUsers,
 } from "react-icons/fi"; // Import icon từ React Icons
 import "../../assets/styles/global.scss"; // Import file SCSS
 import profileAvatar from "../../assets/images/avatar.png"; // Import avatar từ thư mục assets/img
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { User } from "../../interfaces/models/User";
+import { getUserById } from "../../services/userService";
 
 const NavBar: React.FC = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   // State quản lý toggle của dropdown
   const [showDropdown, setShowDropdown] = useState(false);
+  const [profile, setProfile] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user) {
+        try {
+          const fetchedProfile = await getUserById(user.id); // Fetch user profile data
+          setProfile(fetchedProfile);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
+    }
+
+    fetchProfile();
+  }, [user]);
 
   const handleLogout = async () => {
     await logout(); // Gọi hàm logout từ AuthContext
@@ -68,11 +86,11 @@ const NavBar: React.FC = () => {
               Learn
             </Button>
           </Link>
-          <Link to="/private/vocabulary">
+          {/* <Link to="/private/vocabulary">
             <Button variant="dark" className="mx-2">
               Vocabulary
             </Button>
-          </Link>
+          </Link> */}
           <Link to="/private/stories">
             <Button variant="dark" className="mx-2">
               Stories
@@ -113,7 +131,7 @@ const NavBar: React.FC = () => {
               <Dropdown.Item onClick={() => navigate("/private/edit-profile")}>
                 <FiUser className="me-2" /> Profile
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/private/friends")}>
+              {/* <Dropdown.Item onClick={() => navigate("/private/friends")}>
                 <FiUsers className="me-2" /> Friends
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/private/settings")}>
@@ -121,8 +139,8 @@ const NavBar: React.FC = () => {
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/private/messages")}>
                 <FiMessageSquare className="me-2" /> Messages
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/private/progress")}>
+              </Dropdown.Item> */}
+              <Dropdown.Item onClick={() => navigate(`/private/profile/${profile.id}`)}>
                 <FiTrendingUp className="me-2" /> Progress
               </Dropdown.Item>
               <Dropdown.Divider />

@@ -34,7 +34,7 @@ function EditableField({ label, value, onChange, onSave }: EditableFieldProps) {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       <div className="d-flex align-items-center justify-content-between gap-3">
         <div className="flex-grow-1">
           <label className="form-label mb-2 fw-bold">{label}</label>
@@ -51,7 +51,7 @@ function EditableField({ label, value, onChange, onSave }: EditableFieldProps) {
               onChange={(e) => setTempValue(e.target.value)}
               readOnly={!isEditing}
             />
-            <div className="d-flex align-items-center gap-2">
+            <div className="d-flex gap-2">
               {isEditing ? (
                 <>
                   <button
@@ -336,7 +336,7 @@ function EditProfile() {
           {/* Right Column: Profile Information */}
           <div className="col-lg-8">
             <div className="card border-0 shadow-sm">
-              <div               className="card-body p-4">
+              <div className="card-body p-4">
                 <h4 className="fw-bold mb-4">Profile Information</h4>
                 <EditableField
                   label="First Name"
