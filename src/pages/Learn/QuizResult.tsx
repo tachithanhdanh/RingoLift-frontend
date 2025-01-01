@@ -11,7 +11,10 @@ import { UserAnswerResponse } from "../../interfaces/responses/UserAnswerRespons
 import { useAuth } from "../../hooks/useAuth";
 import { User } from "../../interfaces/models/User";
 import { getUserById } from "../../services/userService";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { createMistake } from "../../services/mistakeService";
+import { getDailyProgressByUserIdAndCreatedAt, updateDailyProgress } from "../../services/dailyProgressService";
+import { updateLessonProgress} from "../../services/userService";
 
 interface ExtendedQuestion extends LessonQuestionResponse {
   content: string;
@@ -108,10 +111,68 @@ function QuizResult() {
     return userAnswer?.answerText === question.correctAnswer ? count + 1 : count;
   }, 0);
 
+  const handleSaveResults = async () => {
+    if (!profile || !lessonId) return;
+  
+    try {
+      // 1. Update dailyProgress
+      const today = new Date();
+      const createdAt = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const fetchedDailyProgress = await getDailyProgressByUserIdAndCreatedAt(profile.id, createdAt);
+
+      const { id, ...rest } = fetchedDailyProgress;
+      const dailyProgressPayload = {
+        ...rest,
+        lessonCount: fetchedDailyProgress.lessonCount + 1
+      };
+
+      // console.log('dailyProgressPayload: ', dailyProgressPayload);
+      await updateDailyProgress(fetchedDailyProgress.id, dailyProgressPayload);
+  
+      // 2. Update lessonProgress
+      const lessonProgressPayload = {
+        correctCount: correctAnswers,
+        incorrectCount: questions.length - correctAnswers,
+        lessonId: parseInt(lessonId, 10),
+        timeSpent: 0,
+        userId: profile.id,
+      };
+
+      // console.log('lessonProgressPayload: ', lessonProgressPayload);
+      await updateLessonProgress(profile.id, parseInt(lessonId, 10), lessonProgressPayload);
+  
+      // 3. Save mistakes
+      const mistakePayloads = questions
+        .filter((question) => {
+          const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+          return userAnswer?.answerText !== question.correctAnswer;
+        })
+        .map((question) => {
+          const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+          return {
+            userId: profile.id,
+            lessonId: parseInt(lessonId, 10),
+            questionId: question.questionId,
+            yourAnswer: userAnswer?.answerText || "Không chọn",
+            correctAnswer: question.correctAnswer,
+            active: false,
+          };
+        });
+  
+      // console.log('mistakePayloads: ', mistakePayloads);
+      await Promise.all(mistakePayloads.map((payload) => createMistake(payload)));
+  
+      alert("Kết quả đã được lưu thành công!");
+    } catch (error) {
+      console.error("Failed to save results:", error);
+      alert("Lưu kết quả thất bại!");
+    }
+  };  
+
   return (
     <div className="min-vh-100 bg-light">
-      // <NavBar />
-      <div className="quiz-result-pad container">
+      <NavBar />
+      <div className="navbar-padding container">
         <div className="row">
           {/* Main Content */}
           <div className="col-md-8 offset-md-2">
@@ -153,16 +214,23 @@ function QuizResult() {
               </ul>
 
               {/* Action Buttons */}
-              <div className="d-flex justify-content-between w-100 gap-3 mt-4">
+              <div className="d-flex justify-content-between w-100 gap-3">
                 <button
-                  className="btn btn-primary flex-grow-1 py-3"
+                  className="btn btn-primary flex-grow-1 py-3 mt-3"
                   style={{ borderRadius: '30px' }}
                   onClick={() => navigate(`/private/learn/lesson/${lessonId}`)} // Navigate to current lesson
                 >
                   Học lại
                 </button>
                 <button
-                  className="btn btn-success flex-grow-1 py-3"
+                  className="btn btn-warning flex-grow-1 py-3 mt-3"
+                  style={{ borderRadius: '30px' }}
+                  onClick={handleSaveResults}
+                >
+                  Lưu kết quả
+                </button>
+                <button
+                  className="btn btn-success flex-grow-1 py-3 mt-3"
                   style={{ borderRadius: '30px' }}
                   onClick={() => navigate(`/private/learn/lesson/${parseInt(lessonId, 10) + 1}`)} // Navigate to next lesson
                 >

@@ -4,6 +4,7 @@ import { UserResponse } from "../interfaces/responses/UserResponse";
 import { ResponseObject } from "../interfaces/responses/ResponseObject";
 import { UserGenderResponse } from "../interfaces/responses/UserGenderResponse";
 import { LessonProgressResponse } from "../interfaces/responses/LessonProgressResponse";
+import { LessonProgressRequest } from "../interfaces/requests/LessonProgressRequest";
 
 // Tạo mới người dùng
 export const createUser = async (
@@ -100,6 +101,23 @@ export const getLessonProgressByUserId = async (
   try {
     const response = await api.get<ResponseObject<LessonProgressResponse[]>>(
       `users/${userId}/progress/lesson`
+    );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Update lesson progress by user id and lesson id
+export const updateLessonProgress = async (
+  userId: number,
+  lessonId: number,
+  lessonProgressRequest: LessonProgressRequest
+): Promise<LessonProgressResponse> => {
+  try {
+    const response = await api.put<ResponseObject<LessonProgressResponse>>(
+      `users/${userId}/progress/lesson/${lessonId}`,
+      lessonProgressRequest
     );
     return response.data.data;
   } catch (error) {
