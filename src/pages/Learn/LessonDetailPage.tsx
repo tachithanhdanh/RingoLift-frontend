@@ -5,6 +5,7 @@ import { Container, Button, Modal } from "react-bootstrap";
 import { getLessonById } from "../../services/lessonService";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { LessonResponse } from "../../interfaces/responses/LessonResponse";
+import "../../assets/styles/global.scss";
 
 export default function LessonDetailPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
@@ -48,7 +49,7 @@ export default function LessonDetailPage() {
   };
 
   return (
-    <Container className="my-5 p-5 border rounded shadow-lg">
+    <Container className="mb-5 border rounded shadow-lg marginTop p-5">
       {lesson ? (
         <div>
           <div className="text-center">

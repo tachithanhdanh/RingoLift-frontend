@@ -15,7 +15,7 @@ export default function Landing() {
             <Card.Body>
               <Card.Title as="h2" className="mb-4">
                 Chào mừng bạn đến với{" "}
-                <span className="text-primary">Our App</span>
+                <span className="text-primary">RingoLift</span>
               </Card.Title>
               <Card.Text>
                 Nơi bạn có thể học, giao lưu và khám phá những kiến thức mới mỗi
