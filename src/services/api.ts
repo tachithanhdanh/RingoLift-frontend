@@ -24,7 +24,7 @@ api.interceptors.request.use(
       config.data = toSnakeCase(config.data);
     }
 
-    console.log('config.data: ', config.data);
+    // console.log('config.data: ', config.data);
 
     return config;
   },
