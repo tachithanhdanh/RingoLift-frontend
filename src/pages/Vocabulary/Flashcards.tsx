@@ -47,7 +47,9 @@ const Flashcard: React.FC = () => {
 
   const handlePrev = () => {
     setShowMeaning(false);
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + words.length) % words.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + words.length) % words.length
+    );
   };
 
   const handleFlip = () => {
@@ -56,7 +58,10 @@ const Flashcard: React.FC = () => {
 
   if (loading) {
     return (
-      <Container fluid className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <Container
+        fluid
+        className="min-vh-100 d-flex align-items-center justify-content-center bg-light"
+      >
         <Spinner animation="border" variant="primary" />
       </Container>
     );
@@ -64,7 +69,10 @@ const Flashcard: React.FC = () => {
 
   if (error) {
     return (
-      <Container fluid className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <Container
+        fluid
+        className="min-vh-100 d-flex align-items-center justify-content-center bg-light"
+      >
         <Alert variant="danger">{error}</Alert>
       </Container>
     );
@@ -72,7 +80,10 @@ const Flashcard: React.FC = () => {
 
   if (words.length === 0) {
     return (
-      <Container fluid className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <Container
+        fluid
+        className="min-vh-100 d-flex align-items-center justify-content-center bg-light"
+      >
         <Alert variant="info">No words found in this topic.</Alert>
       </Container>
     );
@@ -81,9 +92,17 @@ const Flashcard: React.FC = () => {
   const currentWord = words[currentIndex];
 
   return (
-    <Container fluid className="min-vh-100 d-flex flex-column align-items-center bg-light">
+    <Container
+      fluid
+      className="min-vh-100 d-flex flex-column align-items-center bg-light"
+    >
       <header className="w-100 d-flex justify-content-center align-items-center position-relative px-4 py-3 text-dark">
-        <Link to="/private/vocabulary" className="position-absolute start-0 px-4">&larr; Back</Link>
+        <Link
+          to="/private/vocabulary"
+          className="position-absolute start-0 px-4"
+        >
+          &larr; Back
+        </Link>
         <h2 className="m-0">Topic: {topicName}</h2>
       </header>
       <main className="d-flex flex-column align-items-center justify-content-center flex-grow-1">
@@ -93,10 +112,15 @@ const Flashcard: React.FC = () => {
           onClick={handleFlip}
         >
           <Card.Body>
-            <Card.Title className="text-orange fw-bold" style={{ fontSize: "4rem" }}>
+            <Card.Title
+              className="text-orange fw-bold"
+              style={{ fontSize: "2rem" }}
+            >
               {showMeaning ? currentWord.meaning : currentWord.word}
             </Card.Title>
-            <p className="text-muted">{showMeaning ? currentWord.pronunciation : "(Tap to flip)"}</p>
+            <p className="text-muted">
+              {showMeaning ? currentWord.pronunciation : "(Tap to flip)"}
+            </p>
           </Card.Body>
         </Card>
         <div className="mt-4 d-flex justify-content-between w-100 px-4">
@@ -113,7 +137,7 @@ const Flashcard: React.FC = () => {
               className="progress-bar bg-success"
               role="progressbar"
               style={{ width: `${((currentIndex + 1) / words.length) * 100}%` }}
-              aria-valuenow={(currentIndex + 1) / words.length * 100}
+              aria-valuenow={((currentIndex + 1) / words.length) * 100}
               aria-valuemin={0}
               aria-valuemax={100}
             ></div>

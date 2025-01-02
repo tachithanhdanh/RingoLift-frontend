@@ -13,8 +13,12 @@ import { User } from "../../interfaces/models/User";
 import { getUserById } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 import { createMistake } from "../../services/mistakeService";
-import { getDailyProgressByUserIdAndCreatedAt, updateDailyProgress } from "../../services/dailyProgressService";
-import { updateLessonProgress} from "../../services/userService";
+import "../../assets/styles/global.scss";
+import {
+  getDailyProgressByUserIdAndCreatedAt,
+  updateDailyProgress,
+} from "../../services/dailyProgressService";
+import { updateLessonProgress } from "../../services/userService";
 
 interface ExtendedQuestion extends LessonQuestionResponse {
   content: string;
@@ -72,7 +76,9 @@ function QuizResult() {
         // Fetch detailed data for each question
         const detailedQuestions = await Promise.all(
           lessonQuestions.map(async (lessonQuestion) => {
-            const questionDetails = await getQuestionById(lessonQuestion.questionId);
+            const questionDetails = await getQuestionById(
+              lessonQuestion.questionId
+            );
             return {
               ...lessonQuestion,
               content: questionDetails.content,
@@ -107,28 +113,37 @@ function QuizResult() {
 
   // Calculate total correct answers
   const correctAnswers = questions.reduce((count, question) => {
-    const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
-    return userAnswer?.answerText === question.correctAnswer ? count + 1 : count;
+    const userAnswer = userAnswers.find(
+      (ua) => ua.questionId === question.questionId
+    );
+    return userAnswer?.answerText === question.correctAnswer
+      ? count + 1
+      : count;
   }, 0);
 
   const handleSaveResults = async () => {
     if (!profile || !lessonId) return;
-  
+
     try {
       // 1. Update dailyProgress
       const today = new Date();
-      const createdAt = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-      const fetchedDailyProgress = await getDailyProgressByUserIdAndCreatedAt(profile.id, createdAt);
+      const createdAt = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const fetchedDailyProgress = await getDailyProgressByUserIdAndCreatedAt(
+        profile.id,
+        createdAt
+      );
 
       const { id, ...rest } = fetchedDailyProgress;
       const dailyProgressPayload = {
         ...rest,
-        lessonCount: fetchedDailyProgress.lessonCount + 1
+        lessonCount: fetchedDailyProgress.lessonCount + 1,
       };
 
       // console.log('dailyProgressPayload: ', dailyProgressPayload);
       await updateDailyProgress(fetchedDailyProgress.id, dailyProgressPayload);
-  
+
       // 2. Update lessonProgress
       const lessonProgressPayload = {
         correctCount: correctAnswers,
@@ -139,16 +154,24 @@ function QuizResult() {
       };
 
       // console.log('lessonProgressPayload: ', lessonProgressPayload);
-      await updateLessonProgress(profile.id, parseInt(lessonId, 10), lessonProgressPayload);
-  
+      await updateLessonProgress(
+        profile.id,
+        parseInt(lessonId, 10),
+        lessonProgressPayload
+      );
+
       // 3. Save mistakes
       const mistakePayloads = questions
         .filter((question) => {
-          const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+          const userAnswer = userAnswers.find(
+            (ua) => ua.questionId === question.questionId
+          );
           return userAnswer?.answerText !== question.correctAnswer;
         })
         .map((question) => {
-          const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
+          const userAnswer = userAnswers.find(
+            (ua) => ua.questionId === question.questionId
+          );
           return {
             userId: profile.id,
             lessonId: parseInt(lessonId, 10),
@@ -158,19 +181,21 @@ function QuizResult() {
             active: false,
           };
         });
-  
+
       // console.log('mistakePayloads: ', mistakePayloads);
-      await Promise.all(mistakePayloads.map((payload) => createMistake(payload)));
-  
+      await Promise.all(
+        mistakePayloads.map((payload) => createMistake(payload))
+      );
+
       alert("Kết quả đã được lưu thành công!");
     } catch (error) {
       console.error("Failed to save results:", error);
       alert("Lưu kết quả thất bại!");
     }
-  };  
+  };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100 bg-light paddingTop">
       <NavBar />
       <div className="navbar-padding container">
         <div className="row">
@@ -180,15 +205,22 @@ function QuizResult() {
               <div className="quiz-result text-center">
                 <h4 className="fw-bold text-orange">Hoàn thành bài học</h4>
                 <h6 className="text-muted">
-                  Bạn trả lời đúng <strong>{correctAnswers}/{questions.length}</strong> câu hỏi.
+                  Bạn trả lời đúng{" "}
+                  <strong>
+                    {correctAnswers}/{questions.length}
+                  </strong>{" "}
+                  câu hỏi.
                 </h6>
               </div>
 
               {/* Question List */}
               <ul className="list-group">
                 {questions.map((question, index) => {
-                  const userAnswer = userAnswers.find((ua) => ua.questionId === question.questionId);
-                  const isCorrect = userAnswer?.answerText === question.correctAnswer;
+                  const userAnswer = userAnswers.find(
+                    (ua) => ua.questionId === question.questionId
+                  );
+                  const isCorrect =
+                    userAnswer?.answerText === question.correctAnswer;
                   return (
                     <li key={question.questionId} className="list-group-item">
                       <div>
@@ -196,7 +228,9 @@ function QuizResult() {
                       </div>
                       <div className="d-flex flex-column mt-2">
                         <span
-                          className={`badge rounded-pill ${isCorrect ? "bg-success" : "bg-danger"}`}
+                          className={`badge rounded-pill ${
+                            isCorrect ? "bg-success" : "bg-danger"
+                          }`}
                           style={{ fontSize: "16px", fontWeight: "bold" }}
                         >
                           Bạn chọn: {userAnswer?.answerText || "Không chọn"}
@@ -217,22 +251,26 @@ function QuizResult() {
               <div className="d-flex justify-content-between w-100 gap-3">
                 <button
                   className="btn btn-primary flex-grow-1 py-3 mt-3"
-                  style={{ borderRadius: '30px' }}
+                  style={{ borderRadius: "30px" }}
                   onClick={() => navigate(`/private/learn/lesson/${lessonId}`)} // Navigate to current lesson
                 >
                   Học lại
                 </button>
                 <button
                   className="btn btn-warning flex-grow-1 py-3 mt-3"
-                  style={{ borderRadius: '30px' }}
+                  style={{ borderRadius: "30px" }}
                   onClick={handleSaveResults}
                 >
                   Lưu kết quả
                 </button>
                 <button
                   className="btn btn-success flex-grow-1 py-3 mt-3"
-                  style={{ borderRadius: '30px' }}
-                  onClick={() => navigate(`/private/learn/lesson/${parseInt(lessonId, 10) + 1}`)} // Navigate to next lesson
+                  style={{ borderRadius: "30px" }}
+                  onClick={() =>
+                    navigate(
+                      `/private/learn/lesson/${parseInt(lessonId, 10) + 1}`
+                    )
+                  } // Navigate to next lesson
                 >
                   Tiếp tục
                 </button>

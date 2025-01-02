@@ -1,4 +1,4 @@
-@use 'sass:color';
+@use "sass:color";
 
 .text-orange {
   color: #ff782d;
@@ -30,4 +30,8 @@ $custom-navbar-color: #ffecec;
     transform: scale(1.05); // Slightly enlarge the card
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); // Add shadow for depth
   }
+}
+
+.paddingTop {
+  padding-top: 100px;
 }

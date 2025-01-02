@@ -86,11 +86,11 @@ const NavBar: React.FC = () => {
               Learn
             </Button>
           </Link>
-          {/* <Link to="/private/vocabulary">
+          <Link to="/private/vocabulary">
             <Button variant="dark" className="mx-2">
               Vocabulary
             </Button>
-          </Link> */}
+          </Link>
           <Link to="/private/stories">
             <Button variant="dark" className="mx-2">
               Stories
@@ -108,12 +108,11 @@ const NavBar: React.FC = () => {
           </Nav.Link>
 
           {/* Profile Dropdown */}
-          <Dropdown show={showDropdown} onToggle={() => {}}>
-            <Dropdown.Toggle
-              as="div"
-              style={{ cursor: "pointer" }}
-              onClick={handleToggleDropdown}
-            >
+          <Dropdown
+            show={showDropdown}
+            onToggle={(isOpen) => setShowDropdown(isOpen)} // Cập nhật trạng thái khi toggle
+          >
+            <Dropdown.Toggle as="div" style={{ cursor: "pointer" }}>
               <img
                 src={profileAvatar}
                 alt="Profile Avatar"
@@ -131,16 +130,9 @@ const NavBar: React.FC = () => {
               <Dropdown.Item onClick={() => navigate("/private/edit-profile")}>
                 <FiUser className="me-2" /> Profile
               </Dropdown.Item>
-              {/* <Dropdown.Item onClick={() => navigate("/private/friends")}>
-                <FiUsers className="me-2" /> Friends
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/private/settings")}>
-                <FiSettings className="me-2" /> Settings
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/private/messages")}>
-                <FiMessageSquare className="me-2" /> Messages
-              </Dropdown.Item> */}
-              <Dropdown.Item onClick={() => navigate(`/private/profile/${profile.id}`)}>
+              <Dropdown.Item
+                onClick={() => navigate(`/private/profile/${profile?.id}`)}
+              >
                 <FiTrendingUp className="me-2" /> Progress
               </Dropdown.Item>
               <Dropdown.Divider />

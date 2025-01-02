@@ -8,6 +8,7 @@ import { getLessonsByChapterId } from "../../services/lessonService";
 import LessonCard from "../../components/learn/LessonCard";
 import { ChapterResponse } from "../../interfaces/responses/ChapterResponse";
 import { LessonResponse } from "../../interfaces/responses/LessonResponse";
+import "../../assets/styles/global.scss";
 
 export default function Chapter() {
   const { chapterId } = useParams<{ chapterId: string }>();
@@ -35,7 +36,7 @@ export default function Chapter() {
     }
 
     fetchChapterAndLessons();
-  }, [chapterId, chapter, lessons]);
+  }, [chapterId]);
 
   if (loading) {
     return (
@@ -51,39 +52,41 @@ export default function Chapter() {
   }
 
   return (
-    <Container className="my-5">
-      {chapter && (
-        <div className="mb-4 text-center">
-          <h1>{chapter.name}</h1>
-          <img
-            src={chapter.coverImage || "https://via.placeholder.com/600x200"}
-            alt={chapter.name}
-            className="img-fluid rounded my-3"
-          />
-          <p>
-            <strong>Description: </strong>
-            {chapter.description}
-          </p>
-        </div>
-      )}
-
-      <h2 className="text-center">Lessons</h2>
-      <Row className="mt-4">
-        {lessons.map((lesson, index) => (
-          <Col
-            key={index}
-            sm={12}
-            md={4}
-            className="d-flex align-items-stretch"
-          >
-            <LessonCard
-              id={lesson.id}
-              title={lesson.title}
-              description={lesson.description || ""}
+    <>
+      <Container className="paddingTop">
+        {chapter && (
+          <div className="mb-4 text-center">
+            <h1>{chapter.name}</h1>
+            <img
+              src={chapter.coverImage || "https://via.placeholder.com/600x200"}
+              alt={chapter.name}
+              className="img-fluid rounded my-3"
             />
-          </Col>
-        ))}
-      </Row>
-    </Container>
+            <p>
+              <strong>Description: </strong>
+              {chapter.description}
+            </p>
+          </div>
+        )}
+
+        <h2 className="text-center">Lessons</h2>
+        <Row className="mt-4">
+          {lessons.map((lesson, index) => (
+            <Col
+              key={index}
+              sm={12}
+              md={4}
+              className="d-flex align-items-stretch"
+            >
+              <LessonCard
+                id={lesson.id}
+                title={lesson.title}
+                description={lesson.description || ""}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </>
   );
 }
